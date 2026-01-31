@@ -1,16 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="off" shutdownHook="disable">>
+<Configuration status="WARN" shutdownHook="disable">
     <Appenders>
-        <Console name="LogToConsole" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{1.} - %msg%n"/>
-        </Console>
+        <RollingFile name="InfoFile"
+                     fileName="logs/info-current.log"
+                     filePattern="logs/%d{yyyy-MM}/%d{dd}/info-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{15} - %msg%n"/>
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="ErrorFile"
+                     fileName="logs/errors-current.log"
+                     filePattern="logs/%d{yyyy-MM}/%d{dd}/errors-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{15} - %msg%n%throwable"/>
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
     </Appenders>
+
     <Loggers>
-        <Logger name="tarefas.lista" level="info" additivity="false">
-            <AppenderRef ref="LogToConsole"/>
-        </Logger>
-        <Root level="error">
-            <AppenderRef ref="LogToConsole"/>
+        <Root level="info">
+            <AppenderRef ref="InfoFile"/>
+            <AppenderRef ref="ErrorFile"/>
         </Root>
     </Loggers>
 </Configuration>
