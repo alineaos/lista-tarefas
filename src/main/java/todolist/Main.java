@@ -12,6 +12,7 @@ public class Main {
     private final static Scanner SCANNER = new Scanner(System.in);
 
     public static void main(String[] args) {
+        log.info("Sistema iniciado.");
         boolean isToContinue = true;
         while (isToContinue) {
             try {
@@ -24,6 +25,7 @@ public class Main {
                 int option = Validator.validateNumber(SCANNER.nextLine());
                 if (option == 0) {
                     System.out.println("Sistema encerrado.");
+                    log.info("Sistema encerrado com sucesso.");
                     return;
                 }
 
@@ -40,6 +42,5 @@ public class Main {
                 System.out.println("Aviso: " + e.getMessage());
             }
         }
-        System.out.println("Sistema encerrado.");
     }
 }

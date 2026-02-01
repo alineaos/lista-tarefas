@@ -8,7 +8,10 @@ import todolist.model.Task;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j2
 public class TaskRepository {
@@ -37,6 +40,37 @@ public class TaskRepository {
 
         return ps;
 
+    }
+
+    public static List<Task> findAll() {
+        log.info("Listando todas as tarefas...");
+        List<Task> tasks = new ArrayList<>();
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = createPreparedStatementFindAll(conn);
+             ResultSet rs = ps.executeQuery()
+        ) {
+            while (rs.next()){
+                Task task = Task.builder()
+                        .id(rs.getInt("id"))
+                        .description(rs.getString("description"))
+                        .status(rs.getString("status"))
+                        .date(rs.getDate("date").toLocalDate())
+                        .category(rs.getString("category"))
+                        .build();
+                tasks.add(task);
+            }
+
+            log.info("As tarefas foram listadas com sucesso.");
+        } catch (SQLException e) {
+            log.error("Não foi possível listar as tarefas", e);
+            throw new DatabaseException("Não foi possível listar as tarefas. Erro interno no banco.", e);
+        }
+        return tasks;
+    }
+
+    private static PreparedStatement createPreparedStatementFindAll(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM todo_list.task";
+        return conn.prepareStatement(sql);
     }
 
 

@@ -15,9 +15,17 @@ public class Validator {
         }
     }
 
-    public static LocalDate validateDate(String input) {
+    public static LocalDate validateStringToDate(String input) {
         try {
             return LocalDate.parse(input, dateTimeFormatter);
+        } catch (DateTimeParseException e){
+            throw new BusinessException("'" + input + "' Não é uma data válida.");
+        }
+    }
+
+    public static String validateDateToString(LocalDate input) {
+        try {
+            return input.format(dateTimeFormatter);
         } catch (DateTimeParseException e){
             throw new BusinessException("'" + input + "' Não é uma data válida.");
         }
