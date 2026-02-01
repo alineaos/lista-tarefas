@@ -5,6 +5,7 @@ import todolist.conn.ConnectionFactory;
 import todolist.exceptions.DatabaseException;
 import todolist.model.Task;
 import todolist.model.enums.TaskStatus;
+import todolist.util.ColumnsEnum;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -75,5 +76,39 @@ public class TaskRepository {
         return conn.prepareStatement(sql);
     }
 
+    public static List<Task> findByCriteria(ColumnsEnum criteria, String param) {
+        log.info("Listando todas as tarefas com '{}' na coluna '{}'...", param, criteria);
+        List<Task> tasks = new ArrayList<>();
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = createPreparedStatementFindByCriteria(conn, criteria.getENGLISH_COLUMN_NAME(), param);
+             ResultSet rs = ps.executeQuery()
+        ) {
+            while (rs.next()){
+                TaskStatus rsToEnum = TaskStatus.selectByStatusPortugueseName(rs.getString("status"));
+                Task task = Task.builder()
+                        .id(rs.getInt("id"))
+                        .description(rs.getString("description"))
+                        .status(rsToEnum)
+                        .date(rs.getDate("date").toLocalDate())
+                        .category(rs.getString("category"))
+                        .build();
+                tasks.add(task);
+            }
+
+            log.info("As tarefas com '{}' na coluna '{}' foram listadas com sucesso.", param, criteria);
+        } catch (SQLException e) {
+            log.error("Não foi possível listar as tarefas", e);
+            throw new DatabaseException("Não foi possível listar as tarefas. Erro interno no banco.", e);
+        }
+        return tasks;
+    }
+
+    private static PreparedStatement createPreparedStatementFindByCriteria(Connection conn, String criteria, String param) throws SQLException {
+        String sql = "SELECT * FROM todo_list.task WHERE "+ criteria +" LIKE ?;";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, String.format("%%%s%%", param));
+        return ps;
+    }
 
 }

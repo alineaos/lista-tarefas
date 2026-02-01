@@ -4,6 +4,8 @@ import todolist.exceptions.Validator;
 import todolist.model.Task;
 import todolist.model.enums.TaskStatus;
 import todolist.repository.TaskRepository;
+import todolist.ui.Menu;
+import todolist.util.ColumnsEnum;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,19 +44,37 @@ public class TaskService {
 
         return TaskStatus.selectByStatusId(option);
     }
-
     public static void findAll() {
         List<Task> tasks = TaskRepository.findAll();
         int maxDescriptionLength = descriptionLargestLength(tasks);
         displayHeader(maxDescriptionLength);
-        tasks.forEach(f -> System.out.printf("[%-2d] %-"+maxDescriptionLength+"s | %-12s | %-10s | %s%n", f.getId(), f.getDescription(),
-                        f.getStatus().getPORTUGUESE_STATUS_NAME(), Validator.validateDateToString(f.getDate()), f.getCategory()));
+        tasks.forEach(f -> System.out.printf("[%-2d] %-" + maxDescriptionLength + "s | %-12s | %-10s | %s%n", f.getId(), f.getDescription(),
+                f.getStatus().getPORTUGUESE_STATUS_NAME(), Validator.validateDateToString(f.getDate()), f.getCategory()));
+    }
+
+    public static void findByCriteria() {
+        Menu.showCriteriasMenu();
+        int option = Validator.validateNumber(SCANNER.nextLine());
+        String param;
+        ColumnsEnum selectedCriteria = Menu.processingCriteriasOption(option);
+        System.out.println("Digite o parâmetro de busca");
+        if (selectedCriteria.getENGLISH_COLUMN_NAME().equalsIgnoreCase("Status")) {
+            param = taskStatus().getPORTUGUESE_STATUS_NAME();
+        } else {
+            param = SCANNER.nextLine();
+        }
+
+
+        List<Task> tasks = TaskRepository.findByCriteria(selectedCriteria, param);
+        int maxDescriptionLength = descriptionLargestLength(tasks);
+        displayHeader(maxDescriptionLength);
+        tasks.forEach(f -> System.out.printf("[%-2d] %-" + maxDescriptionLength + "s | %-12s | %-10s | %s%n", f.getId(), f.getDescription(),
+                f.getStatus().getPORTUGUESE_STATUS_NAME(), Validator.validateDateToString(f.getDate()), f.getCategory()));
     }
 
     private static void displayHeader(int maxDescriptionLength) {
-        //String headerPattern = "[ID] Tarefa - Status - Data - Categoria"
-        String headerPattern = "[%-2s] %-"+maxDescriptionLength+"s | %-12s | %-10s | %s%n";
-        System.out.printf(headerPattern, "ID","Tarefa", "Status", "Data", "Categoria");
+        String headerPattern = "[%-2s] %-" + maxDescriptionLength + "s | %-12s | %-10s | %s%n";
+        System.out.printf(headerPattern, "ID", "Tarefa", "Status", "Data", "Categoria");
     }
 
     private static int descriptionLargestLength(List<Task> tasks) {
