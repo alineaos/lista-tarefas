@@ -1,4 +1,4 @@
-package lista.tarefas.conn;
+package todolist.conn;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
