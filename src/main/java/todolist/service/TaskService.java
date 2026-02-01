@@ -52,13 +52,18 @@ public class TaskService {
         String param;
         ColumnsEnum selectedCriteria = Menu.processingCriteriasMenuOption(option);
         System.out.println("Digite o parâmetro de busca");
-        if (selectedCriteria.getEnglishColumnName().equalsIgnoreCase("Status")) {
-            Menu.taskStatusMenu();
-            option = Validator.validateNumber(SCANNER.nextLine());
-            TaskStatus status = Menu.processingTaskStatusMenu(option);
-            param = status.getPortugueseStatusName();
-        } else {
-            param = SCANNER.nextLine();
+        switch (selectedCriteria.getEnglishColumnName()) {
+            case "Status":
+                Menu.taskStatusMenu();
+                TaskStatus status = Menu.processingTaskStatusMenu(option);
+                param = status.getPortugueseStatusName();
+                break;
+            case "Date":
+                System.out.println("A data precisa estar no formato DD/MM/YYYY");
+                param = String.valueOf(Validator.validateStringToDate(SCANNER.nextLine()));
+                break;
+            default:
+                param = SCANNER.nextLine();
         }
 
 
