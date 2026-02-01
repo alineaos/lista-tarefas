@@ -2,6 +2,7 @@ package todolist.service;
 
 import todolist.exceptions.Validator;
 import todolist.model.Task;
+import todolist.model.enums.TaskStatus;
 import todolist.repository.TaskRepository;
 
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ public class TaskService {
         System.out.println("Descreva a tarefa");
         String description = SCANNER.nextLine();
         System.out.println("Selecione o status da tarefa");
-        String status = taskStatus();
+        TaskStatus status = taskStatus();
         System.out.println("Digite a data limite no formato DD/MM/AAAA");
         LocalDate date = Validator.validateStringToDate(SCANNER.nextLine());
         System.out.println("Digite a categoria da tarefa");
@@ -30,7 +31,7 @@ public class TaskService {
         TaskRepository.saveTask(task);
     }
 
-    private static String taskStatus() {
+    private static TaskStatus taskStatus() {
         int option;
         do {
             System.out.println("[1] Não iniciada");
@@ -39,12 +40,7 @@ public class TaskService {
             option = Validator.validateNumber(SCANNER.nextLine());
         } while (option < 1 || option > 3);
 
-        return switch (option) {
-            case 1 -> "Não iniciada";
-            case 2 -> "Em progresso";
-            case 3 -> "Concluída";
-            default -> throw new IllegalArgumentException("Valor inválido");
-        };
+        return TaskStatus.selectByStatusId(option);
     }
 
     public static void findAll() {
@@ -52,7 +48,7 @@ public class TaskService {
         int maxDescriptionLength = descriptionLargestLength(tasks);
         displayHeader(maxDescriptionLength);
         tasks.forEach(f -> System.out.printf("[%-2d] %-"+maxDescriptionLength+"s | %-12s | %-10s | %s%n", f.getId(), f.getDescription(),
-                        f.getStatus(), Validator.validateDateToString(f.getDate()), f.getCategory()));
+                        f.getStatus().getPORTUGUESE_STATUS_NAME(), Validator.validateDateToString(f.getDate()), f.getCategory()));
     }
 
     private static void displayHeader(int maxDescriptionLength) {

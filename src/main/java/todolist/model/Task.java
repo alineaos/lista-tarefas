@@ -2,6 +2,7 @@ package todolist.model;
 
 import lombok.Builder;
 import lombok.Value;
+import todolist.model.enums.TaskStatus;
 
 import java.time.LocalDate;
 
@@ -10,7 +11,7 @@ import java.time.LocalDate;
 public class Task {
     Integer id;
     String description;
-    String status;
+    TaskStatus status;
     LocalDate date;
     String category;
 }

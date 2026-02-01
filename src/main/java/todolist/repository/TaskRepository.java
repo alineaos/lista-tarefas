@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import todolist.conn.ConnectionFactory;
 import todolist.exceptions.DatabaseException;
 import todolist.model.Task;
+import todolist.model.enums.TaskStatus;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -34,7 +35,7 @@ public class TaskRepository {
         PreparedStatement ps = conn.prepareStatement(sql);
 
         ps.setString(1, task.getDescription());
-        ps.setString(2, task.getStatus());
+        ps.setString(2, task.getStatus().getPORTUGUESE_STATUS_NAME());
         ps.setDate(3, Date.valueOf(task.getDate()));
         ps.setString(4, task.getCategory());
 
@@ -50,10 +51,11 @@ public class TaskRepository {
              ResultSet rs = ps.executeQuery()
         ) {
             while (rs.next()){
+                TaskStatus rsToEnum = TaskStatus.selectByStatusPortugueseName(rs.getString("status"));
                 Task task = Task.builder()
                         .id(rs.getInt("id"))
                         .description(rs.getString("description"))
-                        .status(rs.getString("status"))
+                        .status(rsToEnum)
                         .date(rs.getDate("date").toLocalDate())
                         .category(rs.getString("category"))
                         .build();
@@ -69,7 +71,7 @@ public class TaskRepository {
     }
 
     private static PreparedStatement createPreparedStatementFindAll(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM todo_list.task";
+        String sql = "SELECT * FROM todo_list.task;";
         return conn.prepareStatement(sql);
     }
 
