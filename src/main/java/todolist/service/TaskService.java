@@ -39,11 +39,7 @@ public class TaskService {
     }
 
     public static void findAll() {
-        List<Task> tasks = TaskRepository.findAll();
-        int maxDescriptionLength = descriptionLargestLength(tasks);
-        displayHeader(maxDescriptionLength);
-        tasks.forEach(f -> System.out.printf("[%-2d] %-" + maxDescriptionLength + "s | %-12s | %-10s | %s%n", f.getId(), f.getDescription(),
-                f.getStatus().getPortugueseStatusName(), Validator.validateDateToString(f.getDate()), f.getCategory()));
+        printTaskTable(TaskRepository.findAll());
     }
 
     public static void findByCriteria() {
@@ -66,17 +62,7 @@ public class TaskService {
                 param = SCANNER.nextLine();
         }
 
-
-        List<Task> tasks = TaskRepository.findByCriteria(selectedCriteria, param);
-        int maxDescriptionLength = descriptionLargestLength(tasks);
-        displayHeader(maxDescriptionLength);
-        tasks.forEach(f -> System.out.printf("[%-2d] %-" + maxDescriptionLength + "s | %-12s | %-10s | %s%n", f.getId(), f.getDescription(),
-                f.getStatus().getPortugueseStatusName(), Validator.validateDateToString(f.getDate()), f.getCategory()));
-    }
-
-    private static void displayHeader(int maxDescriptionLength) {
-        String headerPattern = "[%-2s] %-" + maxDescriptionLength + "s | %-12s | %-10s | %s%n";
-        System.out.printf(headerPattern, "ID", "Tarefa", "Status", "Data", "Categoria");
+        printTaskTable(TaskRepository.findByCriteria(selectedCriteria, param));
     }
 
     private static int descriptionLargestLength(List<Task> tasks) {
@@ -87,5 +73,22 @@ public class TaskService {
                 .orElse(10);
 
         return Math.max(max, 6);
+    }
+
+    private static void printTaskTable(List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            System.out.println("Lista vazia. Nenhuma tarefa para exibir.");
+            return;
+        }
+
+        int maxDescriptionLength = descriptionLargestLength(tasks);
+        String tablePattern = "[%-2s] %-" + maxDescriptionLength + "s | %-12s | %-10s | %s%n";
+        System.out.printf(tablePattern, "ID", "Tarefa", "Status", "Data", "Categoria");
+        tasks.forEach(f -> System.out.printf(tablePattern,
+                f.getId(),
+                f.getDescription(),
+                f.getStatus().getPortugueseStatusName(),
+                Validator.validateDateToString(f.getDate()),
+                f.getCategory()));
     }
 }
