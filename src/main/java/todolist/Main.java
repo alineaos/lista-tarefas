@@ -32,7 +32,7 @@ public class Main {
                 Menu.processingTaskMenuOption(option);
             } catch (BusinessException e) {
                 log.warn("Aviso de negócio: {}", e.getMessage(), e);
-                System.out.println("Aviso de negócio: " + e.getMessage());
+                System.out.println("Aviso: " + e.getMessage());
             } catch (DatabaseException e) {
                 log.error("Erro no banco de dados: {}", e.getMessage(), e);
                 System.out.println("Erro interno no banco: " + e.getMessage());

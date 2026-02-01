@@ -17,7 +17,9 @@ public class Validator {
 
     public static LocalDate validateStringToDate(String input) {
         try {
-            return LocalDate.parse(input, dateTimeFormatter);
+            LocalDate date = LocalDate.parse(input, dateTimeFormatter);
+            if (date.isBefore(LocalDate.now())) throw new BusinessException("'" + input + "' Não é uma data válida.");
+            return date;
         } catch (DateTimeParseException e){
             throw new BusinessException("'" + input + "' Não é uma data válida.");
         }
