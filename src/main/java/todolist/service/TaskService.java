@@ -8,6 +8,7 @@ import todolist.ui.Menu;
 import todolist.util.ColumnsEnum;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -64,6 +65,15 @@ public class TaskService {
         }
 
         printTaskTable(TaskRepository.findByCriteria(selectedCriteria, param));
+    }
+
+    public static void findByDataAsc() {
+        List<Task> tasks = TaskRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(Task::getDate))
+                .toList();
+
+        printTaskTable(tasks);
     }
 
     private static int descriptionLargestLength(List<Task> tasks) {
