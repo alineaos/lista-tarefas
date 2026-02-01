@@ -36,7 +36,7 @@ public class TaskRepository {
         PreparedStatement ps = conn.prepareStatement(sql);
 
         ps.setString(1, task.getDescription());
-        ps.setString(2, task.getStatus().getPORTUGUESE_STATUS_NAME());
+        ps.setString(2, task.getStatus().getPortugueseStatusName());
         ps.setDate(3, Date.valueOf(task.getDate()));
         ps.setString(4, task.getCategory());
 
@@ -77,10 +77,10 @@ public class TaskRepository {
     }
 
     public static List<Task> findByCriteria(ColumnsEnum criteria, String param) {
-        log.info("Listando todas as tarefas com '{}' na coluna '{}'...", param, criteria);
+        log.info("Listando todas as tarefas '{}' na coluna '{}'...", param, criteria);
         List<Task> tasks = new ArrayList<>();
         try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement ps = createPreparedStatementFindByCriteria(conn, criteria.getENGLISH_COLUMN_NAME(), param);
+             PreparedStatement ps = createPreparedStatementFindByCriteria(conn, criteria.getEnglishColumnName(), param);
              ResultSet rs = ps.executeQuery()
         ) {
             while (rs.next()){
@@ -95,7 +95,7 @@ public class TaskRepository {
                 tasks.add(task);
             }
 
-            log.info("As tarefas com '{}' na coluna '{}' foram listadas com sucesso.", param, criteria);
+            log.info("As tarefas '{}' na coluna '{}' foram listadas com sucesso.", param, criteria);
         } catch (SQLException e) {
             log.error("Não foi possível listar as tarefas", e);
             throw new DatabaseException("Não foi possível listar as tarefas. Erro interno no banco.", e);

@@ -10,20 +10,20 @@ public enum ColumnsEnum {
     DATE(4, "Date", "Data"),
     CATEGORY(5, "Category", "Categoria");
 
-    private final int COLUMN_CLASSIFICATION;
-    private final String ENGLISH_COLUMN_NAME;
-    private final String PORTUGUESE_COLUMN_NAME;
+    private final int columnClassification;
+    private final String englishColumnName;
+    private final String portugueseColumnName;
 
-    ColumnsEnum(int COLUMN_CLASSIFICATION, String ENGLISH_COLUMN_NAME, String PORTUGUESE_COLUMN_NAME) {
-        this.COLUMN_CLASSIFICATION = COLUMN_CLASSIFICATION;
-        this.ENGLISH_COLUMN_NAME = ENGLISH_COLUMN_NAME;
-        this.PORTUGUESE_COLUMN_NAME = PORTUGUESE_COLUMN_NAME;
+    ColumnsEnum(int columnClassification, String englishColumnName, String portugueseColumnName) {
+        this.columnClassification = columnClassification;
+        this.englishColumnName = englishColumnName;
+        this.portugueseColumnName = portugueseColumnName;
     }
 
     public static ColumnsEnum selectByColumnClassification(int classification){
-        for (ColumnsEnum columnsEnum : ColumnsEnum.values()){
-            if (columnsEnum.getCOLUMN_CLASSIFICATION() == classification){
-                return columnsEnum;
+        for (ColumnsEnum column : ColumnsEnum.values()){
+            if (column.getColumnClassification() == classification){
+                return column;
             }
         }
         return null;

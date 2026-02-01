@@ -29,7 +29,7 @@ public class Main {
                     return;
                 }
 
-                Menu.processingTaskOption(option);
+                Menu.processingTaskMenuOption(option);
             } catch (BusinessException e) {
                 log.warn("Aviso de negócio: {}", e.getMessage(), e);
                 System.out.println("Aviso de negócio: " + e.getMessage());

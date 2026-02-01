@@ -18,7 +18,12 @@ public class TaskService {
         System.out.println("Descreva a tarefa");
         String description = SCANNER.nextLine();
         System.out.println("Selecione o status da tarefa");
-        TaskStatus status = taskStatus();
+        int option;
+        do {
+            Menu.taskStatusMenu();
+            option = Validator.validateNumber(SCANNER.nextLine());
+        } while (option < 1 || option > 3);
+        TaskStatus status = Menu.processingTaskStatusMenu(option);
         System.out.println("Digite a data limite no formato DD/MM/AAAA");
         LocalDate date = Validator.validateStringToDate(SCANNER.nextLine());
         System.out.println("Digite a categoria da tarefa");
@@ -33,33 +38,25 @@ public class TaskService {
         TaskRepository.saveTask(task);
     }
 
-    private static TaskStatus taskStatus() {
-        int option;
-        do {
-            System.out.println("[1] Não iniciada");
-            System.out.println("[2] Em progresso");
-            System.out.println("[3] Concluída");
-            option = Validator.validateNumber(SCANNER.nextLine());
-        } while (option < 1 || option > 3);
-
-        return TaskStatus.selectByStatusId(option);
-    }
     public static void findAll() {
         List<Task> tasks = TaskRepository.findAll();
         int maxDescriptionLength = descriptionLargestLength(tasks);
         displayHeader(maxDescriptionLength);
         tasks.forEach(f -> System.out.printf("[%-2d] %-" + maxDescriptionLength + "s | %-12s | %-10s | %s%n", f.getId(), f.getDescription(),
-                f.getStatus().getPORTUGUESE_STATUS_NAME(), Validator.validateDateToString(f.getDate()), f.getCategory()));
+                f.getStatus().getPortugueseStatusName(), Validator.validateDateToString(f.getDate()), f.getCategory()));
     }
 
     public static void findByCriteria() {
         Menu.showCriteriasMenu();
         int option = Validator.validateNumber(SCANNER.nextLine());
         String param;
-        ColumnsEnum selectedCriteria = Menu.processingCriteriasOption(option);
+        ColumnsEnum selectedCriteria = Menu.processingCriteriasMenuOption(option);
         System.out.println("Digite o parâmetro de busca");
-        if (selectedCriteria.getENGLISH_COLUMN_NAME().equalsIgnoreCase("Status")) {
-            param = taskStatus().getPORTUGUESE_STATUS_NAME();
+        if (selectedCriteria.getEnglishColumnName().equalsIgnoreCase("Status")) {
+            Menu.taskStatusMenu();
+            option = Validator.validateNumber(SCANNER.nextLine());
+            TaskStatus status = Menu.processingTaskStatusMenu(option);
+            param = status.getPortugueseStatusName();
         } else {
             param = SCANNER.nextLine();
         }
@@ -69,7 +66,7 @@ public class TaskService {
         int maxDescriptionLength = descriptionLargestLength(tasks);
         displayHeader(maxDescriptionLength);
         tasks.forEach(f -> System.out.printf("[%-2d] %-" + maxDescriptionLength + "s | %-12s | %-10s | %s%n", f.getId(), f.getDescription(),
-                f.getStatus().getPORTUGUESE_STATUS_NAME(), Validator.validateDateToString(f.getDate()), f.getCategory()));
+                f.getStatus().getPortugueseStatusName(), Validator.validateDateToString(f.getDate()), f.getCategory()));
     }
 
     private static void displayHeader(int maxDescriptionLength) {
