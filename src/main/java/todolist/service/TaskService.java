@@ -51,6 +51,7 @@ public class TaskService {
         switch (selectedCriteria.getEnglishColumnName()) {
             case "Status":
                 Menu.taskStatusMenu();
+                option = Validator.validateNumber(SCANNER.nextLine());
                 TaskStatus status = Menu.processingTaskStatusMenu(option);
                 param = status.getPortugueseStatusName();
                 break;
