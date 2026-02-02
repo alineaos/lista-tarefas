@@ -112,15 +112,15 @@ public class TaskRepository {
     }
 
     public static void updateStatus(Task task, TaskStatus newStatus) {
-        log.info("Atualizando a tarefa com ID '{}'...", task.getId());
+        log.info("Atualizando o status da tarefa com ID '{}'...", task.getId());
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = createPreparedStatementUpdateStatus(conn, task, newStatus)
         ) {
             ps.execute();
-            log.info("Tarefa com ID '{}' atualizada com sucesso", task.getId());
+            log.info("Status da tarefa com ID '{}' atualizada com sucesso", task.getId());
         } catch (SQLException e) {
-            log.error("Atualizar o status da tarefa", e);
-            throw new DatabaseException("Atualizar o status da tarefa. Erro interno no banco.", e);
+            log.error("Não foi possível atualizar o status da tarefa", e);
+            throw new DatabaseException("Não foi possível atualizar o status da tarefa. Erro interno no banco.", e);
         }
     }
 
@@ -130,6 +130,30 @@ public class TaskRepository {
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, newStatus.getPortugueseStatusName());
         ps.setInt(2, task.getId());
+        return ps;
+    }
+
+    public static void update(Task task) {
+        log.info("Atualizando a tarefa com ID '{}'...", task.getId());
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = createPreparedStatementUpdate(conn, task)
+        ) {
+            ps.execute();
+            log.info("Tarefa com ID '{}' atualizada com sucesso", task.getId());
+        } catch (SQLException e) {
+            log.error("Não foi possível atualizar a tarefa", e);
+            throw new DatabaseException("Não foi possível atualizar a tarefa. Erro interno no banco.", e);
+        }
+    }
+
+    private static PreparedStatement createPreparedStatementUpdate(Connection conn, Task task) throws SQLException {
+        String sql = "UPDATE todo_list.task SET description = ?, date = ?, category = ? WHERE id = ?;";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, task.getDescription());
+        ps.setDate(2, Date.valueOf(task.getDate()));
+        ps.setString(3, task.getCategory());
+        ps.setInt(4, task.getId());
         return ps;
     }
 

@@ -101,6 +101,44 @@ public class TaskService {
         TaskRepository.updateStatus(taskFromDb, newStatus);
     }
 
+    public static void update(){
+        System.out.println("Digite o id da tarefa ou 0 para retornar ao menu anterior");
+        int id = Validator.validateNumber(SCANNER.nextLine());
+        if(id == 0) return;
+        Optional<Task> taskOptional = TaskRepository.findByCriteria(ColumnsEnum.ID, String.valueOf(id)).stream()
+                .filter( t -> t.getId().equals(id))
+                .findFirst();
+
+        if(taskOptional.isEmpty()){
+            System.out.println("Tarefa não encontrada.");
+            return;
+        }
+
+        Task taskFromDb = taskOptional.get();
+        System.out.println("Tarefa: " + taskFromDb.getDescription());
+        System.out.println("Digite a nova descrição. Em branco mantém a atual.");
+        String updatedDescription = SCANNER.nextLine();
+        updatedDescription = updatedDescription.isBlank() ? taskFromDb.getDescription() : updatedDescription;
+
+        System.out.println("Data: " + Validator.validateDateToString(taskFromDb.getDate()));
+        System.out.println("Digite a nova data. Em branco mantém a atual.");
+        String stringToDate = SCANNER.nextLine();
+        LocalDate updatedDate = stringToDate.isBlank() ? taskFromDb.getDate() : Validator.validateStringToDate(stringToDate);
+
+        System.out.println("Categoria: " + taskFromDb.getCategory());
+        System.out.println("Digite a nova categoria. Em branco mantém a atual.");
+        String updatedCategory = SCANNER.nextLine();
+        updatedCategory = updatedCategory.isBlank() ? taskFromDb.getCategory() : updatedCategory;
+
+        Task updatedTask = Task.builder()
+                .id(taskFromDb.getId())
+                .description(updatedDescription)
+                .date(updatedDate)
+                .category(updatedCategory)
+                .build();
+        TaskRepository.update(updatedTask);
+    }
+
     private static int descriptionLargestLength(List<Task> tasks) {
         int max = tasks.stream()
                 .map(Task::getDescription)
