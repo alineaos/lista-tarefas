@@ -157,4 +157,25 @@ public class TaskRepository {
         return ps;
     }
 
+    public static void delete(int id) {
+        log.info("Deletando a tarefa com ID '{}'...", id);
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = createPreparedStatementDelete(conn, id)
+        ) {
+            ps.execute();
+            log.info("Tarefa com ID '{}' deletada com sucesso", id);
+        } catch (SQLException e) {
+            log.error("Não foi possível deletar a tarefa", e);
+            throw new DatabaseException("Não foi possível deletar a tarefa. Erro interno no banco.", e);
+        }
+    }
+
+    private static PreparedStatement createPreparedStatementDelete(Connection conn, int id) throws SQLException {
+        String sql = "DELETE FROM todo_list.task WHERE id = ?;";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, id);
+        return ps;
+    }
+
 }

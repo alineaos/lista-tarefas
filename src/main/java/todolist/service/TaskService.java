@@ -8,6 +8,7 @@ import todolist.ui.Menu;
 import todolist.util.ColumnsEnum;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -77,15 +78,15 @@ public class TaskService {
         printTaskTable(tasks);
     }
 
-    public static void updateStatus(){
+    public static void updateStatus() {
         System.out.println("Digite o id da tarefa ou 0 para retornar ao menu anterior");
         int id = Validator.validateNumber(SCANNER.nextLine());
-        if(id == 0) return;
+        if (id == 0) return;
         Optional<Task> taskOptional = TaskRepository.findByCriteria(ColumnsEnum.ID, String.valueOf(id)).stream()
-                .filter( t -> t.getId().equals(id))
+                .filter(t -> t.getId().equals(id))
                 .findFirst();
 
-        if(taskOptional.isEmpty()){
+        if (taskOptional.isEmpty()) {
             System.out.println("Tarefa não encontrada.");
             return;
         }
@@ -101,15 +102,15 @@ public class TaskService {
         TaskRepository.updateStatus(taskFromDb, newStatus);
     }
 
-    public static void update(){
-        System.out.println("Digite o id da tarefa ou 0 para retornar ao menu anterior");
+    public static void update() {
+        System.out.println("Digite o id da tarefa ou 0 para retornar ao menu anterior.");
         int id = Validator.validateNumber(SCANNER.nextLine());
-        if(id == 0) return;
+        if (id == 0) return;
         Optional<Task> taskOptional = TaskRepository.findByCriteria(ColumnsEnum.ID, String.valueOf(id)).stream()
-                .filter( t -> t.getId().equals(id))
+                .filter(t -> t.getId().equals(id))
                 .findFirst();
 
-        if(taskOptional.isEmpty()){
+        if (taskOptional.isEmpty()) {
             System.out.println("Tarefa não encontrada.");
             return;
         }
@@ -137,6 +138,32 @@ public class TaskService {
                 .category(updatedCategory)
                 .build();
         TaskRepository.update(updatedTask);
+    }
+
+    public static void delete() {
+        System.out.println("Digite o id da tarefa a ser deletada ou 0 para retornar ao menu anterior.");
+        int id = Validator.validateNumber(SCANNER.nextLine());
+
+        Optional<Task> taskToDelete = TaskRepository.findByCriteria(ColumnsEnum.ID, String.valueOf(id)).stream()
+                .filter(t -> t.getId().equals(id))
+                .findFirst();
+
+        if (taskToDelete.isEmpty()) {
+            System.out.println("Tarefa não encontrada.");
+            return;
+        }
+
+        System.out.println("Tarefa selecionada:");
+        printTaskTable(Collections.singletonList(taskToDelete.get()));
+
+        System.out.println("Essa ação é irreversível, você tem certeza? (S/N)");
+        String choice = SCANNER.nextLine();
+        if (!choice.equalsIgnoreCase("S")){
+            System.out.println("Ação cancelada.");
+            return;
+        }
+
+        TaskRepository.delete(id);
     }
 
     private static int descriptionLargestLength(List<Task> tasks) {
