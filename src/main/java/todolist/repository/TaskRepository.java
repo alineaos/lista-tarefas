@@ -178,4 +178,22 @@ public class TaskRepository {
         return ps;
     }
 
+    public static void deleteAll() {
+        log.info("Deletando todos as tarefas da tabela...");
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = createPreparedDeleteAll(conn)
+        ) {
+            ps.execute();
+            log.info("Todas as tarefas da tabela foram deletadas.");
+        } catch (SQLException e) {
+            log.error("Não foi possível deletar todas as tarefas", e);
+            throw new DatabaseException("Não foi possível deletar todas as tarefa. Erro interno no banco.", e);
+        }
+    }
+
+    private static PreparedStatement createPreparedDeleteAll(Connection conn) throws SQLException {
+        String sql = "TRUNCATE TABLE todo_list.task;";
+        return conn.prepareStatement(sql);
+    }
+
 }

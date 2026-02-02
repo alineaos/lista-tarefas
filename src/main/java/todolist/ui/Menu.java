@@ -14,6 +14,7 @@ public class Menu {
         System.out.println("[5] Atualizar o Status da tarefa");
         System.out.println("[6] Atualizar tarefa (descrição, data e categoria)");
         System.out.println("[7] Deletar tarefa");
+        System.out.println("[8] Deletar todas as tarefas");
         System.out.println("[0] Sair do programa");
     }
 
@@ -26,6 +27,7 @@ public class Menu {
             case 5 -> TaskService.updateStatus();
             case 6 -> TaskService.update();
             case 7 -> TaskService.delete();
+            case 8 -> TaskService.deleteAll();
             default -> throw new IllegalArgumentException("Valor inválido");
         }
     }

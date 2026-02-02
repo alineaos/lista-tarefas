@@ -158,12 +158,31 @@ public class TaskService {
 
         System.out.println("Essa ação é irreversível, você tem certeza? (S/N)");
         String choice = SCANNER.nextLine();
-        if (!choice.equalsIgnoreCase("S")){
+        if (!choice.equalsIgnoreCase("S")) {
             System.out.println("Ação cancelada.");
+            if (!choice.equalsIgnoreCase("N")) {
+                System.out.println("A resposta precisa ser S/N.");
+            }
             return;
         }
 
         TaskRepository.delete(id);
+    }
+
+    public static void deleteAll() {
+        System.out.println("Você tem certeza que deseja deletar TODAS as tarefas do banco de dados?");
+        System.out.println("Essa ação é irreversível");
+
+        String choice = SCANNER.nextLine();
+        if (!choice.equalsIgnoreCase("S")) {
+            System.out.println("Ação cancelada. ");
+            if (!choice.equalsIgnoreCase("N")) {
+                System.out.println("A resposta precisa ser S/N.");
+            }
+            return;
+        }
+
+        TaskRepository.deleteAll();
     }
 
     private static int descriptionLargestLength(List<Task> tasks) {
