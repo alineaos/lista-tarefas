@@ -10,6 +10,7 @@ import todolist.util.ColumnsEnum;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class TaskService {
@@ -74,6 +75,30 @@ public class TaskService {
                 .toList();
 
         printTaskTable(tasks);
+    }
+
+    public static void updateStatus(){
+        System.out.println("Digite o id da tarefa ou 0 para retornar ao menu anterior");
+        int id = Validator.validateNumber(SCANNER.nextLine());
+        if(id == 0) return;
+        Optional<Task> taskOptional = TaskRepository.findByCriteria(ColumnsEnum.ID, String.valueOf(id)).stream()
+                .filter( t -> t.getId().equals(id))
+                .findFirst();
+
+        if(taskOptional.isEmpty()){
+            System.out.println("Tarefa não encontrada.");
+            return;
+        }
+
+        Task taskFromDb = taskOptional.get();
+        System.out.println("Tarefa: " + taskFromDb.getDescription());
+        System.out.println("Status: " + taskFromDb.getStatus().getPortugueseStatusName());
+        System.out.println("Digite o novo status");
+        Menu.taskStatusMenu();
+        int option = Validator.validateNumber(SCANNER.nextLine());
+        TaskStatus newStatus = Menu.processingTaskStatusMenu(option);
+
+        TaskRepository.updateStatus(taskFromDb, newStatus);
     }
 
     private static int descriptionLargestLength(List<Task> tasks) {

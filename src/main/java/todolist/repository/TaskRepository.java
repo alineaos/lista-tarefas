@@ -111,4 +111,26 @@ public class TaskRepository {
         return ps;
     }
 
+    public static void updateStatus(Task task, TaskStatus newStatus) {
+        log.info("Atualizando a tarefa com ID '{}'...", task.getId());
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = createPreparedStatementUpdateStatus(conn, task, newStatus)
+        ) {
+            ps.execute();
+            log.info("Tarefa com ID '{}' atualizada com sucesso", task.getId());
+        } catch (SQLException e) {
+            log.error("Atualizar o status da tarefa", e);
+            throw new DatabaseException("Atualizar o status da tarefa. Erro interno no banco.", e);
+        }
+    }
+
+    private static PreparedStatement createPreparedStatementUpdateStatus(Connection conn, Task task, TaskStatus newStatus) throws SQLException {
+        String sql = "UPDATE todo_list.task SET status = ? WHERE id = ?;";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, newStatus.getPortugueseStatusName());
+        ps.setInt(2, task.getId());
+        return ps;
+    }
+
 }
