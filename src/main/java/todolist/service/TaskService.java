@@ -39,7 +39,7 @@ public class TaskService {
                 .date(date)
                 .category(category)
                 .build();
-        TaskRepository.saveTask(task);
+        TaskRepository.insert(task);
     }
 
     public static void findAll() {
