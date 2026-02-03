@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.function.Function;
 
 public class TaskService {
     private static final Scanner SCANNER = new Scanner(System.in);
@@ -79,22 +80,14 @@ public class TaskService {
     }
 
     public static void updateStatus() {
-        System.out.println("Digite o id da tarefa ou 0 para retornar ao menu anterior");
-        int id = Validator.validateNumber(SCANNER.nextLine());
-        if (id == 0) return;
-        Optional<Task> taskOptional = TaskRepository.findByCriteria(ColumnsEnum.ID, String.valueOf(id)).stream()
-                .filter(t -> t.getId().equals(id))
-                .findFirst();
-
-        if (taskOptional.isEmpty()) {
-            System.out.println("Tarefa não encontrada.");
-            return;
-        }
-
+        Optional<Task> taskOptional = findTaskById();
+        if (taskOptional.isEmpty()) return;
         Task taskFromDb = taskOptional.get();
+
         System.out.println("Tarefa: " + taskFromDb.getDescription());
         System.out.println("Status: " + taskFromDb.getStatus().getPortugueseStatusName());
         System.out.println("Digite o novo status");
+
         Menu.taskStatusMenu();
         int option = Validator.validateNumber(SCANNER.nextLine());
         TaskStatus newStatus = Menu.processingTaskStatusMenu(option);
@@ -103,33 +96,16 @@ public class TaskService {
     }
 
     public static void update() {
-        System.out.println("Digite o id da tarefa ou 0 para retornar ao menu anterior.");
-        int id = Validator.validateNumber(SCANNER.nextLine());
-        if (id == 0) return;
-        Optional<Task> taskOptional = TaskRepository.findByCriteria(ColumnsEnum.ID, String.valueOf(id)).stream()
-                .filter(t -> t.getId().equals(id))
-                .findFirst();
-
-        if (taskOptional.isEmpty()) {
-            System.out.println("Tarefa não encontrada.");
-            return;
-        }
-
+        Optional<Task> taskOptional = findTaskById();
+        if (taskOptional.isEmpty()) return;
         Task taskFromDb = taskOptional.get();
-        System.out.println("Tarefa: " + taskFromDb.getDescription());
-        System.out.println("Digite a nova descrição. Em branco mantém a atual.");
-        String updatedDescription = SCANNER.nextLine();
-        updatedDescription = updatedDescription.isBlank() ? taskFromDb.getDescription() : updatedDescription;
 
-        System.out.println("Data: " + Validator.validateDateToString(taskFromDb.getDate()));
-        System.out.println("Digite a nova data. Em branco mantém a atual.");
-        String stringToDate = SCANNER.nextLine();
-        LocalDate updatedDate = stringToDate.isBlank() ? taskFromDb.getDate() : Validator.validateStringToDate(stringToDate);
+        String updatedDescription = fieldToUpdate(ColumnsEnum.DESCRIPTION.getPortugueseColumnName(), taskFromDb.getDescription());
+        LocalDate updatedDate = fieldToUpdate(ColumnsEnum.DATE.getPortugueseColumnName(), taskFromDb.getDate(),
+                Validator::validateStringToDate,
+                Validator::validateDateToString);
+        String updatedCategory = fieldToUpdate(ColumnsEnum.CATEGORY.getPortugueseColumnName(), taskFromDb.getCategory());
 
-        System.out.println("Categoria: " + taskFromDb.getCategory());
-        System.out.println("Digite a nova categoria. Em branco mantém a atual.");
-        String updatedCategory = SCANNER.nextLine();
-        updatedCategory = updatedCategory.isBlank() ? taskFromDb.getCategory() : updatedCategory;
 
         Task updatedTask = Task.builder()
                 .id(taskFromDb.getId())
@@ -141,20 +117,12 @@ public class TaskService {
     }
 
     public static void delete() {
-        System.out.println("Digite o id da tarefa a ser deletada ou 0 para retornar ao menu anterior.");
-        int id = Validator.validateNumber(SCANNER.nextLine());
+        Optional<Task> taskOptional = findTaskById();
+        if (taskOptional.isEmpty()) return;
+        Task taskToDelete = taskOptional.get();
 
-        Optional<Task> taskToDelete = TaskRepository.findByCriteria(ColumnsEnum.ID, String.valueOf(id)).stream()
-                .filter(t -> t.getId().equals(id))
-                .findFirst();
-
-        if (taskToDelete.isEmpty()) {
-            System.out.println("Tarefa não encontrada.");
-            return;
-        }
-
-        System.out.println("Tarefa selecionada:");
-        printTaskTable(Collections.singletonList(taskToDelete.get()));
+        System.out.println("Tarefa selecionada: ");
+        printTaskTable(Collections.singletonList(taskToDelete));
 
         System.out.println("Essa ação é irreversível, você tem certeza? (S/N)");
         String choice = SCANNER.nextLine();
@@ -166,7 +134,7 @@ public class TaskService {
             return;
         }
 
-        TaskRepository.delete(id);
+        TaskRepository.delete(taskToDelete.getId());
     }
 
     public static void deleteAll() {
@@ -210,5 +178,41 @@ public class TaskService {
                 f.getStatus().getPortugueseStatusName(),
                 Validator.validateDateToString(f.getDate()),
                 f.getCategory()));
+    }
+
+    private static Optional<Task> findTaskById() {
+        System.out.println("Digite o id da tarefa ou 0 para retornar ao menu anterior");
+        int id = Validator.validateNumber(SCANNER.nextLine());
+        if (id == 0) return Optional.empty();
+        Optional<Task> taskOptional = TaskRepository.findByCriteria(ColumnsEnum.ID, String.valueOf(id)).stream()
+                .filter(t -> t.getId().equals(id))
+                .findFirst();
+
+        if (taskOptional.isEmpty()) {
+            System.out.println("Tarefa não encontrada.");
+            return Optional.empty();
+        }
+
+        return taskOptional;
+    }
+
+    private static String fieldToUpdate(String field, String currentValue) {
+        System.out.printf("%s: %s%n", field, currentValue);
+        System.out.printf("Digite a nova %s. Em branco mantém a atual.%n", field);
+        String input = SCANNER.nextLine();
+        return input.isBlank() ? currentValue : input;
+
+    }
+
+    private static <T> T fieldToUpdate(String field, T currentValue, Function<String, T> converter, Function<T, String> formatter) {
+        System.out.printf("%s: %s%n", field, formatter.apply(currentValue));
+        System.out.printf("Digite a nova %s. Em branco mantém a atual.%n", field);
+        String input = SCANNER.nextLine();
+
+        if (input.isBlank()) {
+            return currentValue;
+        }
+        return converter.apply(input);
+
     }
 }
