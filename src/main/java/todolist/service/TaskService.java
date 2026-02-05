@@ -4,7 +4,7 @@ import todolist.exceptions.Validator;
 import todolist.model.Task;
 import todolist.model.enums.TaskStatus;
 import todolist.repository.TaskRepository;
-import todolist.util.ColumnsEnum;
+import todolist.util.TaskColumn;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -21,7 +21,7 @@ public class TaskService {
         return TaskRepository.findAll();
     }
 
-    public static <T>List<Task> findByCriteria(ColumnsEnum criteria, T param) {
+    public static <T>List<Task> findByCriteria(TaskColumn criteria, T param) {
         if (param instanceof LocalDate localDate) {
             Validator.validateDateToString(localDate);
             Validator.validateNotPastDate(localDate);
@@ -56,7 +56,7 @@ public class TaskService {
     }
 
     public static Optional<Task> getTaskById(int id){
-        return TaskRepository.findByCriteria(ColumnsEnum.ID, String.valueOf(id)).stream()
+        return TaskRepository.findByCriteria(TaskColumn.ID, String.valueOf(id)).stream()
                 .filter(t -> t.getId().equals(id))
                 .findFirst();
     }

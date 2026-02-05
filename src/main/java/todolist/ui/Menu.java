@@ -2,7 +2,7 @@ package todolist.ui;
 
 import todolist.controller.TaskController;
 import todolist.model.enums.TaskStatus;
-import todolist.util.ColumnsEnum;
+import todolist.util.TaskColumn;
 
 public class Menu {
     public static void showTaskMenu() {
@@ -34,13 +34,13 @@ public class Menu {
 
     public static void showCriteriasMenu() {
         System.out.println("Selecione o critério:");
-        for (ColumnsEnum columns : ColumnsEnum.values()){
+        for (TaskColumn columns : TaskColumn.values()){
             System.out.printf("[%d] %s%n", columns.getColumnClassification(), columns.getPortugueseColumnName());
         }
     }
 
-    public static ColumnsEnum processingCriteriasMenuOption(int option) {
-        return ColumnsEnum.selectByColumnClassification(option);
+    public static TaskColumn processingCriteriasMenuOption(int option) {
+        return TaskColumn.selectByColumnClassification(option);
     }
 
     public static void taskStatusMenu() {

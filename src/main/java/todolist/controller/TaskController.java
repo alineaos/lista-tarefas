@@ -5,7 +5,7 @@ import todolist.model.Task;
 import todolist.model.enums.TaskStatus;
 import todolist.service.TaskService;
 import todolist.ui.Menu;
-import todolist.util.ColumnsEnum;
+import todolist.util.TaskColumn;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -53,7 +53,7 @@ public class TaskController {
         Menu.showCriteriasMenu();
         int option = Validator.validateNumber(SCANNER.nextLine());
 
-        ColumnsEnum selectedCriteria = Menu.processingCriteriasMenuOption(option);
+        TaskColumn selectedCriteria = Menu.processingCriteriasMenuOption(option);
         System.out.println("Digite o parâmetro de busca");
 
         Object param = switch (selectedCriteria.getEnglishColumnName()) {
@@ -100,11 +100,11 @@ public class TaskController {
         if (taskOptional.isEmpty()) return;
         Task taskFromDb = taskOptional.get();
 
-        String updatedDescription = fieldToUpdate(ColumnsEnum.DESCRIPTION.getPortugueseColumnName(), taskFromDb.getDescription());
-        LocalDate updatedDate = fieldToUpdate(ColumnsEnum.DATE.getPortugueseColumnName(), taskFromDb.getDate(),
+        String updatedDescription = fieldToUpdate(TaskColumn.DESCRIPTION.getPortugueseColumnName(), taskFromDb.getDescription());
+        LocalDate updatedDate = fieldToUpdate(TaskColumn.DATE.getPortugueseColumnName(), taskFromDb.getDate(),
                 Validator::validateStringToDate,
                 Validator::validateDateToString);
-        String updatedCategory = fieldToUpdate(ColumnsEnum.CATEGORY.getPortugueseColumnName(), taskFromDb.getCategory());
+        String updatedCategory = fieldToUpdate(TaskColumn.CATEGORY.getPortugueseColumnName(), taskFromDb.getCategory());
 
 
         Task taskToUpdate = Task.builder()

@@ -5,7 +5,7 @@ import todolist.conn.ConnectionFactory;
 import todolist.exceptions.DatabaseException;
 import todolist.model.Task;
 import todolist.model.enums.TaskStatus;
-import todolist.util.ColumnsEnum;
+import todolist.util.TaskColumn;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -45,21 +45,15 @@ public class TaskRepository {
 
     public static List<Task> findAll() {
         log.info("Iniciando a busca por todas as tarefas...");
-        List<Task> tasks = new ArrayList<>();
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareFindAllStatement(conn);
              ResultSet rs = ps.executeQuery()
         ) {
-            while (rs.next()) {
-                tasks.add(mapRowToTask(rs));
-            }
-
-            log.info("Busca finalizada com sucesso. Total de tarefas encontradas: {}.", tasks.size());
+            return executeMap(rs);
         } catch (SQLException e) {
             log.error("Erro ao buscar todas as tarefas", e);
             throw new DatabaseException("Não foi possível listar as tarefas. Erro interno no banco.", e);
         }
-        return tasks;
     }
 
 
@@ -68,23 +62,18 @@ public class TaskRepository {
         return conn.prepareStatement(sql);
     }
 
-    public static List<Task> findByCriteria(ColumnsEnum criteria, String param) {
+    public static List<Task> findByCriteria(TaskColumn criteria, String param) {
         log.info("Iniciando a busca por todas as tarefas '{}' na coluna '{}'...", param, criteria);
-        List<Task> tasks = new ArrayList<>();
+
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareFindByCriteriaStatement(conn, criteria.getEnglishColumnName(), param);
              ResultSet rs = ps.executeQuery()
         ) {
-            while (rs.next()) {
-                tasks.add(mapRowToTask(rs));
-            }
-
-            log.info("Busca finalizada com sucesso. Total de tarefas encontradas: {}", tasks.size());
+            return executeMap(rs);
         } catch (SQLException e) {
             log.error("Erro ao buscar as tarefas.", e);
             throw new DatabaseException("Não foi possível listar as tarefas. Erro interno no banco.", e);
         }
-        return tasks;
     }
 
     private static PreparedStatement prepareFindByCriteriaStatement(Connection conn, String criteria, String param) throws SQLException {
@@ -105,6 +94,17 @@ public class TaskRepository {
                 .category(rs.getString("category"))
                 .build();
 
+    }
+
+    private static List<Task> executeMap(ResultSet rs) throws SQLException {
+        List<Task> tasks = new ArrayList<>();
+
+        while (rs.next()) {
+            tasks.add(mapRowToTask(rs));
+        }
+
+        log.info("Busca finalizada com sucesso. Total de tarefas encontradas: {}", tasks.size());
+        return tasks;
     }
 
     public static void updateStatus(Task task, TaskStatus newStatus) {

@@ -3,7 +3,7 @@ package todolist.util;
 import lombok.Getter;
 
 @Getter
-public enum ColumnsEnum {
+public enum TaskColumn {
     ID(1, "Id", "Id"),
     DESCRIPTION(2, "Description", "Descrição"),
     STATUS(3, "Status", "Status"),
@@ -14,14 +14,14 @@ public enum ColumnsEnum {
     private final String englishColumnName;
     private final String portugueseColumnName;
 
-    ColumnsEnum(int columnClassification, String englishColumnName, String portugueseColumnName) {
+    TaskColumn(int columnClassification, String englishColumnName, String portugueseColumnName) {
         this.columnClassification = columnClassification;
         this.englishColumnName = englishColumnName;
         this.portugueseColumnName = portugueseColumnName;
     }
 
-    public static ColumnsEnum selectByColumnClassification(int classification){
-        for (ColumnsEnum column : ColumnsEnum.values()){
+    public static TaskColumn selectByColumnClassification(int classification){
+        for (TaskColumn column : TaskColumn.values()){
             if (column.getColumnClassification() == classification){
                 return column;
             }
