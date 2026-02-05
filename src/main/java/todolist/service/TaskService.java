@@ -24,11 +24,12 @@ public class TaskService {
 
     public static List<Task> findByCriteria(ColumnsEnum criteria, Object param) {
         if (criteria.getEnglishColumnName().equalsIgnoreCase("Date") && param instanceof LocalDate localDate) {
+            Validator.validateDateToString(localDate);
             Validator.validateNotPastDate(localDate);
         }
 
         String objectToString = switch (param) {
-            case LocalDate d -> Validator.validateDateToString(d);
+            case LocalDate d -> d.toString();
             case TaskStatus ts -> ts.getPortugueseStatusName();
             case Integer i -> i.toString();
             case String s -> s;

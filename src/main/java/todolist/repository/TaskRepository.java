@@ -76,9 +76,7 @@ public class TaskRepository {
              ResultSet rs = ps.executeQuery()
         ) {
             while (rs.next()) {
-                while (rs.next()) {
-                    tasks.add(mapRowToTask(rs));
-                }
+                tasks.add(mapRowToTask(rs));
             }
 
             log.info("Busca finalizada com sucesso. Total de tarefas encontradas: {}", tasks.size());
