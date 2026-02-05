@@ -1,6 +1,5 @@
 package todolist.service;
 
-import todolist.exceptions.BusinessException;
 import todolist.exceptions.Validator;
 import todolist.model.Task;
 import todolist.model.enums.TaskStatus;
@@ -22,22 +21,15 @@ public class TaskService {
         return TaskRepository.findAll();
     }
 
-    public static List<Task> findByCriteria(ColumnsEnum criteria, Object param) {
-        if (criteria.getEnglishColumnName().equalsIgnoreCase("Date") && param instanceof LocalDate localDate) {
+    public static <T>List<Task> findByCriteria(ColumnsEnum criteria, T param) {
+        if (param instanceof LocalDate localDate) {
             Validator.validateDateToString(localDate);
             Validator.validateNotPastDate(localDate);
         }
 
-        String objectToString = switch (param) {
-            case LocalDate d -> d.toString();
-            case TaskStatus ts -> ts.getPortugueseStatusName();
-            case Integer i -> i.toString();
-            case String s -> s;
-            case null -> throw new BusinessException("O parâmetro não pode ser nulo.");
-            default -> param.toString();
-        };
+        String selectedParam = paramFormatter(param);
 
-        return TaskRepository.findByCriteria(criteria, objectToString);
+        return TaskRepository.findByCriteria(criteria, selectedParam);
     }
 
     public static List<Task> findByDataAsc() {
@@ -67,5 +59,14 @@ public class TaskService {
         return TaskRepository.findByCriteria(ColumnsEnum.ID, String.valueOf(id)).stream()
                 .filter(t -> t.getId().equals(id))
                 .findFirst();
+    }
+
+    private static <T> String paramFormatter(T param){
+        return switch (param) {
+            case LocalDate d -> d.toString();
+            case TaskStatus ts -> ts.getPortugueseStatusName();
+            case Integer i -> i.toString();
+            default -> param.toString();
+        };
     }
 }
