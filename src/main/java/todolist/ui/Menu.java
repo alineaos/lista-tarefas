@@ -39,7 +39,7 @@ public class Menu {
 
     public static void showCriteriasMenu() {
         System.out.println("Selecione o critério:");
-        for (TaskColumn columns : TaskColumn.values()){
+        for (TaskColumn columns : TaskColumn.values()) {
             System.out.printf("[%d] %s%n", columns.getColumnClassification(), columns.getPortugueseColumnName());
         }
     }
@@ -49,9 +49,9 @@ public class Menu {
     }
 
     public static void taskStatusMenu() {
-            for (TaskStatus status : TaskStatus.values()){
-                System.out.printf("[%d] %s%n", status.getStatusClassification(), status.getPortugueseStatusName());
-            }
+        for (TaskStatus status : TaskStatus.values()) {
+            System.out.printf("[%d] %s%n", status.getStatusClassification(), status.getPortugueseStatusName());
+        }
     }
 
     public static TaskStatus processingTaskStatusMenu(int option) {
@@ -59,27 +59,29 @@ public class Menu {
     }
 
 
-    private static void showCategoryMenu(){
+    private static void showCategoryMenu() {
         System.out.println("**********************");
         System.out.println("* MENU DE CATEGORIAS *");
         System.out.println("**********************\n");
 
         System.out.println("Selecione a opção desejada:");
         System.out.println("[1] Criar categoria");
+        System.out.println("[2] Listar todas as categorias");
         System.out.println("[0] Voltar para o menu anterior");
 
     }
 
-    private static void processingCategoryMenu(int option){
-        switch (option){
+    private static void processingCategoryMenu(int option) {
+        switch (option) {
             case 1 -> CategoryController.save();
+            case 2 -> CategoryController.findAll();
             default -> throw new IllegalArgumentException("Valor inválido");
         }
     }
 
-    public static void runCategoryMenu(Scanner scanner){
+    public static void runCategoryMenu(Scanner scanner) {
         int option;
-        while (true){
+        while (true) {
             showCategoryMenu();
             option = Validator.validateNumber(scanner.nextLine());
             if (option == 0) return;
