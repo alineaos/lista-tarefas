@@ -24,7 +24,6 @@ public class TaskRepository {
         ) {
             ps.execute();
             log.info("Tarefa salva com sucesso! ID da tarefa: {}", task.getId());
-            System.out.println("Tarefa salva com sucesso.");
         } catch (SQLException e) {
             log.error("Erro ao salvar a tarefa '{}'", task.getDescription(), e);
             throw new DatabaseException("Não foi possível salvar a tarefa. Erro interno no banco.", e);

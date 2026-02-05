@@ -7,7 +7,7 @@ import java.time.format.DateTimeParseException;
 public class Validator {
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public static int validateNumber(String input){
+    public static int validateNumber(String input) {
         try {
             return Integer.parseInt(input);
         } catch (NumberFormatException e) {
@@ -17,18 +17,23 @@ public class Validator {
 
     public static LocalDate validateStringToDate(String input) {
         try {
-            LocalDate date = LocalDate.parse(input, dateTimeFormatter);
-            if (date.isBefore(LocalDate.now())) throw new BusinessException("'" + input + "' Não é uma data válida.");
-            return date;
-        } catch (DateTimeParseException e){
+            return LocalDate.parse(input, dateTimeFormatter);
+        } catch (DateTimeParseException e) {
             throw new BusinessException("'" + input + "' Não é uma data válida.");
         }
     }
 
+    public static void validateNotPastDate(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new BusinessException("A data não pode estar no passado.");
+        }
+    }
+
+
     public static String validateDateToString(LocalDate input) {
         try {
             return input.format(dateTimeFormatter);
-        } catch (DateTimeParseException e){
+        } catch (DateTimeParseException e) {
             throw new BusinessException("'" + input + "' Não é uma data válida.");
         }
     }

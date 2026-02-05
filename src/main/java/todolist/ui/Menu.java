@@ -1,7 +1,7 @@
 package todolist.ui;
 
+import todolist.controller.TaskController;
 import todolist.model.enums.TaskStatus;
-import todolist.service.TaskService;
 import todolist.util.ColumnsEnum;
 
 public class Menu {
@@ -20,14 +20,14 @@ public class Menu {
 
     public static void processingTaskMenuOption(int option) {
         switch (option) {
-            case 1 -> TaskService.saveTask();
-            case 2 -> TaskService.findAll();
-            case 3 -> TaskService.findByDataAsc();
-            case 4 -> TaskService.findByCriteria();
-            case 5 -> TaskService.updateStatus();
-            case 6 -> TaskService.update();
-            case 7 -> TaskService.delete();
-            case 8 -> TaskService.deleteAll();
+            case 1 -> TaskController.saveTask();
+            case 2 -> TaskController.findAll();
+            case 3 -> TaskController.findByDataAsc();
+            case 4 -> TaskController.findByCriteria();
+            case 5 -> TaskController.updateStatus();
+            case 6 -> TaskController.update();
+            case 7 -> TaskController.delete();
+            case 8 -> TaskController.deleteAll();
             default -> throw new IllegalArgumentException("Valor inválido");
         }
     }
