@@ -38,4 +38,9 @@ public class Validator {
         }
     }
 
+    public static void validateCategoryName(String input){
+        if (input.isBlank()){
+            throw new BusinessException("O nome da categoria não pode estar em branco.");
+        }
+    }
 }

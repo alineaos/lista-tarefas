@@ -1,8 +1,12 @@
 package todolist.ui;
 
+import todolist.controller.CategoryController;
 import todolist.controller.TaskController;
+import todolist.exceptions.Validator;
 import todolist.model.enums.TaskStatus;
 import todolist.util.TaskColumn;
+
+import java.util.Scanner;
 
 public class Menu {
     public static void showTaskMenu() {
@@ -15,6 +19,7 @@ public class Menu {
         System.out.println("[6] Atualizar tarefa (descrição, data e categoria)");
         System.out.println("[7] Deletar tarefa");
         System.out.println("[8] Deletar todas as tarefas");
+        System.out.println("[9] Acessar o menu de categorias");
         System.out.println("[0] Sair do programa");
     }
 
@@ -53,4 +58,32 @@ public class Menu {
         return TaskStatus.selectByStatusId(option);
     }
 
+
+    private static void showCategoryMenu(){
+        System.out.println("**********************");
+        System.out.println("* MENU DE CATEGORIAS *");
+        System.out.println("**********************\n");
+
+        System.out.println("Selecione a opção desejada:");
+        System.out.println("[1] Criar categoria");
+        System.out.println("[0] Voltar para o menu anterior");
+
+    }
+
+    private static void processingCategoryMenu(int option){
+        switch (option){
+            case 1 -> CategoryController.save();
+            default -> throw new IllegalArgumentException("Valor inválido");
+        }
+    }
+
+    public static void runCategoryMenu(Scanner scanner){
+        int option;
+        while (true){
+            showCategoryMenu();
+            option = Validator.validateNumber(scanner.nextLine());
+            if (option == 0) return;
+            processingCategoryMenu(option);
+        }
+    }
 }

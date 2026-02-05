@@ -5,6 +5,7 @@ import todolist.exceptions.BusinessException;
 import todolist.exceptions.DatabaseException;
 import todolist.exceptions.Validator;
 import todolist.ui.Menu;
+
 import java.util.Scanner;
 
 @Log4j2
@@ -29,7 +30,11 @@ public class Main {
                     return;
                 }
 
-                Menu.processingTaskMenuOption(option);
+                if (option == 9){
+                    Menu.runCategoryMenu(SCANNER);
+                } else {
+                    Menu.processingTaskMenuOption(option);
+                }
             } catch (BusinessException e) {
                 log.warn("Aviso de negócio: {}", e.getMessage(), e);
                 System.out.println("Aviso: " + e.getMessage());
