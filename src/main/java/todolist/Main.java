@@ -23,7 +23,7 @@ public class Main {
                 Menu.showTaskMenu();
 
 
-                int option = Validator.validateNumber(SCANNER.nextLine());
+                int option = Validator.parseInteger(SCANNER.nextLine());
                 if (option == 0) {
                     System.out.println("Sistema encerrado.");
                     log.info("Sistema encerrado com sucesso.");

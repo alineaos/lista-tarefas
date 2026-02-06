@@ -8,7 +8,6 @@ import todolist.ui.Menu;
 import todolist.util.TaskColumn;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -17,18 +16,18 @@ import java.util.function.Function;
 public class TaskController {
     private static final Scanner SCANNER = new Scanner(System.in);
 
-    public static void saveTask() {
+    public static void save() {
         System.out.println("Descreva a tarefa");
         String description = SCANNER.nextLine();
         System.out.println("Selecione o status da tarefa");
         int option;
         do {
             Menu.taskStatusMenu();
-            option = Validator.validateNumber(SCANNER.nextLine());
+            option = Validator.parseInteger(SCANNER.nextLine());
         } while (option < 1 || option > 3);
         TaskStatus status = Menu.processingTaskStatusMenu(option);
         System.out.println("Digite a data limite no formato DD/MM/AAAA");
-        LocalDate date = Validator.validateStringToDate(SCANNER.nextLine());
+        LocalDate date = Validator.parseDate(SCANNER.nextLine());
         System.out.println("Digite a categoria da tarefa");
         String category = SCANNER.nextLine();
 
@@ -39,7 +38,7 @@ public class TaskController {
                 .category(category)
                 .build();
 
-        TaskService.saveTask(taskToSave);
+        TaskService.save(taskToSave);
         System.out.println("Tarefa salva com sucesso.");
     }
 
@@ -51,7 +50,7 @@ public class TaskController {
 
     public static void findByCriteria() {
         Menu.showCriteriasMenu();
-        int option = Validator.validateNumber(SCANNER.nextLine());
+        int option = Validator.parseInteger(SCANNER.nextLine());
 
         TaskColumn selectedCriteria = Menu.processingCriteriasMenuOption(option);
         System.out.println("Digite o parâmetro de busca");
@@ -59,12 +58,12 @@ public class TaskController {
         Object param = switch (selectedCriteria.getEnglishColumnName()) {
             case "Status" -> {
                 Menu.taskStatusMenu();
-                option = Validator.validateNumber(SCANNER.nextLine());
+                option = Validator.parseInteger(SCANNER.nextLine());
                 yield Menu.processingTaskStatusMenu(option);
             }
             case "Date" -> {
                 System.out.println("A data precisa estar no formato DD/MM/YYYY");
-                yield  Validator.validateStringToDate(SCANNER.nextLine());
+                yield  Validator.parseDate(SCANNER.nextLine());
             }
             default -> SCANNER.nextLine();
         };
@@ -88,7 +87,7 @@ public class TaskController {
         System.out.println("Digite o novo status");
 
         Menu.taskStatusMenu();
-        int option = Validator.validateNumber(SCANNER.nextLine());
+        int option = Validator.parseInteger(SCANNER.nextLine());
         TaskStatus newStatus = Menu.processingTaskStatusMenu(option);
 
         TaskService.updateStatus(taskFromDb, newStatus);
@@ -102,8 +101,8 @@ public class TaskController {
 
         String updatedDescription = fieldToUpdate(TaskColumn.DESCRIPTION.getPortugueseColumnName(), taskFromDb.getDescription());
         LocalDate updatedDate = fieldToUpdate(TaskColumn.DATE.getPortugueseColumnName(), taskFromDb.getDate(),
-                Validator::validateStringToDate,
-                Validator::validateDateToString);
+                Validator::parseDate,
+                Validator::formatDate);
         String updatedCategory = fieldToUpdate(TaskColumn.CATEGORY.getPortugueseColumnName(), taskFromDb.getCategory());
 
 
@@ -124,8 +123,7 @@ public class TaskController {
         Task taskToDelete = taskOptional.get();
 
         System.out.println("Tarefa selecionada: ");
-        printTaskTable(Collections.singletonList(taskToDelete));
-
+        printTaskTable(List.of(taskToDelete));
         if (confirmeAction("Essa ação é irreversível, você tem certeza?")) {
             TaskService.delete(taskToDelete.getId());
             System.out.println("A tarefa foi excluída com sucesso.");
@@ -162,13 +160,13 @@ public class TaskController {
                 f.getId(),
                 f.getDescription(),
                 f.getStatus().getPortugueseStatusName(),
-                Validator.validateDateToString(f.getDate()),
+                Validator.formatDate(f.getDate()),
                 f.getCategory()));
     }
 
     private static Optional<Task> getTaskById() {
         System.out.println("Digite o id da tarefa ou 0 para retornar ao menu anterior");
-        int id = Validator.validateNumber(SCANNER.nextLine());
+        int id = Validator.parseInteger(SCANNER.nextLine());
         if (id == 0) return Optional.empty();
         Optional<Task> taskOptional = TaskService.getTaskById(id);
 

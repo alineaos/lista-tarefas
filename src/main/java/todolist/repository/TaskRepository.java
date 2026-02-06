@@ -17,7 +17,7 @@ import java.util.List;
 
 @Log4j2
 public class TaskRepository {
-    public static void insert(Task task) {
+    public static void save(Task task) {
         log.info("Tentando salvar nova tarefa '{}'...", task.getDescription());
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareInsertStatement(conn, task)

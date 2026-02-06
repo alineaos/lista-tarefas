@@ -11,7 +11,7 @@ import java.util.Optional;
 public class CategoryService {
 
     public static void save(Category category) {
-        Validator.validateCategoryName(category.getName());
+        Validator.categoryName(category.getName());
         existsByName(category.getName());
         CategoryRepository.save(category);
     }
@@ -25,7 +25,7 @@ public class CategoryService {
     }
 
     public static void update(Category category) {
-        Validator.validateCategoryName(category.getName());
+        Validator.categoryName(category.getName());
         existsByName(category.getName());
         CategoryRepository.update(category);
     }

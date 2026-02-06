@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class TaskService {
-    public static void saveTask(Task task) {
-        Validator.validateNotPastDate(task.getDate());
-        TaskRepository.insert(task);
+    public static void save(Task task) {
+        Validator.notPastDate(task.getDate());
+        TaskRepository.save(task);
     }
 
     public static List<Task> findAll() {
@@ -23,8 +23,8 @@ public class TaskService {
 
     public static <T>List<Task> findByCriteria(TaskColumn criteria, T param) {
         if (param instanceof LocalDate localDate) {
-            Validator.validateDateToString(localDate);
-            Validator.validateNotPastDate(localDate);
+            Validator.formatDate(localDate);
+            Validator.notPastDate(localDate);
         }
 
         String selectedParam = paramFormatter(param);

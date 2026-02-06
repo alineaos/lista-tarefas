@@ -25,7 +25,7 @@ public class Menu {
 
     public static void processingTaskMenuOption(int option) {
         switch (option) {
-            case 1 -> TaskController.saveTask();
+            case 1 -> TaskController.save();
             case 2 -> TaskController.findAll();
             case 3 -> TaskController.findByDataAsc();
             case 4 -> TaskController.findByCriteria();
@@ -89,7 +89,7 @@ public class Menu {
         int option;
         while (true) {
             showCategoryMenu();
-            option = Validator.validateNumber(scanner.nextLine());
+            option = Validator.parseInteger(scanner.nextLine());
             if (option == 0) return;
             processingCategoryMenu(option);
         }
