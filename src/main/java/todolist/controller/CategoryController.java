@@ -5,12 +5,13 @@ import todolist.model.Category;
 import todolist.service.CategoryService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class CategoryController {
     private static final Scanner SCANNER = new Scanner(System.in);
 
-    public static void save(){
+    public static void save() {
         System.out.println("Digite o nome da categoria");
         String name = SCANNER.nextLine();
 
@@ -22,17 +23,34 @@ public class CategoryController {
         System.out.println("Categoria salva com sucesso.");
     }
 
-    public static void findAll(){
-    List<Category> categories = CategoryService.findAll();
+    public static void findAll() {
+        List<Category> categories = CategoryService.findAll();
         printCategoryTable(categories);
     }
 
-    public static void findById(){
-        System.out.println("Digite o id para ser buscado");
-        int id = Validator.validateNumber(SCANNER.nextLine());
+    public static void findById() {
+        Optional<Category> categoryOptional = getCategoryById();
 
-        CategoryService.findById(id)
-                .ifPresent(category -> printCategoryTable(List.of(category)));
+        if (categoryOptional.isEmpty()) return;
+
+        printCategoryTable(List.of(categoryOptional.get()));
+    }
+
+    public static void update() {
+        Optional<Category> categoryOptional = getCategoryById();
+        if (categoryOptional.isEmpty()) return;
+        Category categoryFromDb = categoryOptional.get();
+
+        System.out.println("Digite o novo nome: ");
+        String newName = SCANNER.nextLine();
+
+        Category categoryToUpdate = Category.builder()
+                .id(categoryFromDb.getId())
+                .name(newName)
+                .build();
+
+        CategoryService.update(categoryToUpdate);
+        System.out.printf("A categoria '%s' foi atualizada para '%s'.%n", categoryFromDb.getName(), newName);
     }
 
     private static void printCategoryTable(List<Category> categories) {
@@ -46,5 +64,17 @@ public class CategoryController {
         categories.forEach(c -> System.out.printf(tablePattern,
                 c.getId(),
                 c.getName()));
+    }
+
+    private static Optional<Category> getCategoryById() {
+        System.out.println("Digite o id para ser buscado");
+        int id = Validator.validateNumber(SCANNER.nextLine());
+        if (id == 0) return Optional.empty();
+
+        Optional<Category> categoryOptional = CategoryService.findById(id);
+
+        if (categoryOptional.isEmpty()) System.out.println("Categoria não encontrada.");
+
+        return categoryOptional;
     }
 }

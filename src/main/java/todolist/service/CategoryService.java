@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class CategoryService {
 
-    public static void save(Category category){
+    public static void save(Category category) {
         Validator.validateCategoryName(category.getName());
         CategoryRepository.save(category);
     }
@@ -18,7 +18,12 @@ public class CategoryService {
         return CategoryRepository.findAll();
     }
 
-    public static Optional<Category> findById(int id){
+    public static Optional<Category> findById(int id) {
         return CategoryRepository.findById(id);
+    }
+
+    public static void update(Category category) {
+        Validator.validateCategoryName(category.getName());
+        CategoryRepository.update(category);
     }
 }

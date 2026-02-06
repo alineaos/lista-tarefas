@@ -101,4 +101,27 @@ public class CategoryRepository {
         log.info("Busca finalizada com sucesso");
         return Optional.of(mapRowToTask(rs));
     }
+
+    public static void update(Category category) {
+        log.info("Atualizando a categoria '{}'...", category.getName());
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = prepareUpdateStatement(conn, category)
+        ) {
+            int rowsAffected = ps.executeUpdate();
+            log.info("Categoria atualizada com sucesso! Linhas afetadas: {}", rowsAffected);
+        } catch (SQLException e) {
+            log.error("Erro ao atualizar a categoria '{}'", category.getName(), e);
+            throw new DatabaseException("Não foi possível atualizar a categoria. Erro interno no banco.", e);
+        }
+    }
+
+    private static PreparedStatement prepareUpdateStatement(Connection conn, Category category) throws SQLException {
+        String sql = "UPDATE todo_list.category SET name = ? WHERE id = ?;";
+        PreparedStatement ps = conn.prepareStatement(sql);
+
+        ps.setString(1, category.getName());
+        ps.setInt(2, category.getId());
+
+        return ps;
+    }
 }

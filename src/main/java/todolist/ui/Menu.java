@@ -68,6 +68,7 @@ public class Menu {
         System.out.println("[1] Criar categoria");
         System.out.println("[2] Listar todas as categorias");
         System.out.println("[3] Listar categoria por Id");
+        System.out.println("[4] Atualizar categoria");
         System.out.println("[0] Voltar para o menu anterior");
 
     }
@@ -77,6 +78,7 @@ public class Menu {
             case 1 -> CategoryController.save();
             case 2 -> CategoryController.findAll();
             case 3 -> CategoryController.findById();
+            case 4 -> CategoryController.update();
             default -> throw new IllegalArgumentException("Valor inválido");
         }
     }
