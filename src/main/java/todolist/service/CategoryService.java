@@ -26,4 +26,8 @@ public class CategoryService {
         Validator.validateCategoryName(category.getName());
         CategoryRepository.update(category);
     }
+
+    public static void delete(int id){
+        CategoryRepository.delete(id);
+    }
 }

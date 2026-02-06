@@ -124,4 +124,26 @@ public class CategoryRepository {
 
         return ps;
     }
+
+    public static void delete(int id) {
+        log.info("Deletando a categoria com ID {}...", id);
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = prepareDeleteStatement(conn, id)
+        ) {
+            int rowsAffected = ps.executeUpdate();
+            log.info("Categoria deletada com sucesso! Linhas afetadas: {}", rowsAffected);
+        } catch (SQLException e) {
+            log.error("Erro ao deletar a categoria '{}'", id, e);
+            throw new DatabaseException("Não foi possível deletar a categoria. Erro interno no banco.", e);
+        }
+    }
+
+    private static PreparedStatement prepareDeleteStatement(Connection conn, int id) throws SQLException {
+        String sql = "DELETE FROM todo_list.category WHERE id = ?;";
+        PreparedStatement ps = conn.prepareStatement(sql);
+
+        ps.setInt(1, id);
+
+        return ps;
+    }
 }

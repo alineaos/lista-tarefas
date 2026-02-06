@@ -53,6 +53,20 @@ public class CategoryController {
         System.out.printf("A categoria '%s' foi atualizada para '%s'.%n", categoryFromDb.getName(), newName);
     }
 
+    public static void delete(){
+        Optional<Category> categoryOptional = getCategoryById();
+        if (categoryOptional.isEmpty()) return;
+        Category categoryFromDb = categoryOptional.get();
+
+        System.out.println("Categoria selecionada: ");
+        printCategoryTable(List.of(categoryFromDb));
+
+        if (confirmeAction("Essa ação é irreversível, você tem certeza?")) {
+            CategoryService.delete(categoryFromDb.getId());
+            System.out.printf("Categoria '%s' deletada com sucesso%n", categoryFromDb.getName());
+        }
+    }
+
     private static void printCategoryTable(List<Category> categories) {
         if (categories.isEmpty()) {
             System.out.println("Lista vazia. Nenhuma categoria para exibir.");
@@ -67,7 +81,7 @@ public class CategoryController {
     }
 
     private static Optional<Category> getCategoryById() {
-        System.out.println("Digite o id para ser buscado");
+        System.out.println("Digite o id da categoria ou 0 para cancelar");
         int id = Validator.validateNumber(SCANNER.nextLine());
         if (id == 0) return Optional.empty();
 
@@ -76,5 +90,17 @@ public class CategoryController {
         if (categoryOptional.isEmpty()) System.out.println("Categoria não encontrada.");
 
         return categoryOptional;
+    }
+
+    private static boolean confirmeAction (String message) {
+        while (true) {
+            System.out.printf("%s (S/N)%n", message);
+            String input = SCANNER.nextLine().toUpperCase();
+            if (input.equals("S")) return true;
+            if (input.equals("N")) {
+                System.out.println("Ação cancelada.");
+                return false;
+            }
+        }
     }
 }
