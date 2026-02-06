@@ -146,4 +146,32 @@ public class CategoryRepository {
 
         return ps;
     }
+
+    public static boolean existsByName(String name) {
+        log.info("Verificando se o nome já existe...");
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = prepareExistsByNameStatement(conn, name);
+             ResultSet rs = ps.executeQuery()
+        ) {
+            if (rs.next()){
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+            return false;
+        } catch (SQLException e) {
+            log.error("Erro ao verificar o banco de dados", e);
+            throw new DatabaseException("Não foi possível verificar a existência do nome. Erro interno no banco", e);
+        }
+    }
+
+    private static PreparedStatement prepareExistsByNameStatement(Connection conn, String name) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM todo_list.category WHERE name = ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+
+        ps.setString(1, name);
+        return ps;
+
+    }
+
+
 }

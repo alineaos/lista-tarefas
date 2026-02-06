@@ -1,5 +1,6 @@
 package todolist.service;
 
+import todolist.exceptions.BusinessException;
 import todolist.exceptions.Validator;
 import todolist.model.Category;
 import todolist.repository.CategoryRepository;
@@ -11,6 +12,7 @@ public class CategoryService {
 
     public static void save(Category category) {
         Validator.validateCategoryName(category.getName());
+        existsByName(category.getName());
         CategoryRepository.save(category);
     }
 
@@ -24,10 +26,18 @@ public class CategoryService {
 
     public static void update(Category category) {
         Validator.validateCategoryName(category.getName());
+        existsByName(category.getName());
         CategoryRepository.update(category);
     }
 
-    public static void delete(int id){
+    public static void delete(int id) {
         CategoryRepository.delete(id);
+    }
+
+    private static void existsByName(String name) {
+        boolean nameAlreadyExists = CategoryRepository.existsByName(name);
+        if (nameAlreadyExists) {
+            throw new BusinessException("O nome '" + name + "' já existe no banco de dados.");
+        }
     }
 }
