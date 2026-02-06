@@ -5,6 +5,7 @@ import todolist.model.Category;
 import todolist.repository.CategoryRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CategoryService {
 
@@ -12,8 +13,12 @@ public class CategoryService {
         Validator.validateCategoryName(category.getName());
         CategoryRepository.save(category);
     }
+
     public static List<Category> findAll() {
         return CategoryRepository.findAll();
     }
 
+    public static Optional<Category> findById(int id){
+        return CategoryRepository.findById(id);
+    }
 }

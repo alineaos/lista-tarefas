@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 public class CategoryRepository {
@@ -40,7 +41,7 @@ public class CategoryRepository {
         log.info("Iniciando a busca por todas as categorias...");
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareFindAllStatement(conn);
-             ResultSet rs = ps.executeQuery();
+             ResultSet rs = ps.executeQuery()
         ) {
             return executeMap(rs);
         } catch (SQLException e) {
@@ -53,6 +54,27 @@ public class CategoryRepository {
         String sql = "SELECT * FROM todo_list.category;";
 
         return conn.prepareStatement(sql);
+    }
+
+    public static Optional<Category> findById(int id) {
+        log.info("Iniciando a busca de categorias por ID...");
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = prepareFindByIdStatement(conn, id);
+             ResultSet rs = ps.executeQuery()
+        ) {
+            return executeSingleMap(rs);
+        } catch (SQLException e) {
+            log.error("Erro ao buscar categorias por ID", e);
+            throw new DatabaseException("Não foi possível listar categorias por ID. Erro interno no banco.", e);
+        }
+    }
+
+    private static PreparedStatement prepareFindByIdStatement(Connection conn, int id) throws SQLException {
+        String sql = "SELECT * FROM todo_list.category WHERE id = ?;";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, id);
+        return ps;
     }
 
     private static Category mapRowToTask(ResultSet rs) throws SQLException {
@@ -71,5 +93,12 @@ public class CategoryRepository {
 
         log.info("Busca finalizada com sucesso. Total de categorias encontradas: {}", categories.size());
         return categories;
+    }
+
+    private static Optional<Category> executeSingleMap(ResultSet rs) throws SQLException {
+        if (!rs.next()) return Optional.empty();
+
+        log.info("Busca finalizada com sucesso");
+        return Optional.of(mapRowToTask(rs));
     }
 }

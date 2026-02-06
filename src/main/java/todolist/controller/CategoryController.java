@@ -1,5 +1,6 @@
 package todolist.controller;
 
+import todolist.exceptions.Validator;
 import todolist.model.Category;
 import todolist.service.CategoryService;
 
@@ -24,6 +25,14 @@ public class CategoryController {
     public static void findAll(){
     List<Category> categories = CategoryService.findAll();
         printCategoryTable(categories);
+    }
+
+    public static void findById(){
+        System.out.println("Digite o id para ser buscado");
+        int id = Validator.validateNumber(SCANNER.nextLine());
+
+        CategoryService.findById(id)
+                .ifPresent(category -> printCategoryTable(List.of(category)));
     }
 
     private static void printCategoryTable(List<Category> categories) {
