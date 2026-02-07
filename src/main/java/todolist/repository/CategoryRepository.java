@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Log4j2
 public class CategoryRepository {
-    public static void save(Category category) {
+    public void save(Category category) {
         log.info("Tentando salvar nova categoria '{}'...", category.getName());
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareSaveStatement(conn, category)
@@ -28,7 +28,7 @@ public class CategoryRepository {
         }
     }
 
-    private static PreparedStatement prepareSaveStatement(Connection conn, Category category) throws SQLException {
+    private PreparedStatement prepareSaveStatement(Connection conn, Category category) throws SQLException {
         String sql = "INSERT INTO todo_list.category (name) values (?);";
         PreparedStatement ps = conn.prepareStatement(sql);
 
@@ -37,7 +37,7 @@ public class CategoryRepository {
         return ps;
     }
 
-    public static List<Category> findAll() {
+    public List<Category> findAll() {
         log.info("Iniciando a busca por todas as categorias...");
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareFindAllStatement(conn);
@@ -50,13 +50,13 @@ public class CategoryRepository {
         }
     }
 
-    private static PreparedStatement prepareFindAllStatement(Connection conn) throws SQLException {
+    private PreparedStatement prepareFindAllStatement(Connection conn) throws SQLException {
         String sql = "SELECT *  FROM todo_list.category ORDER BY id ASC;";
 
         return conn.prepareStatement(sql);
     }
 
-    public static Optional<Category> findById(int id) {
+    public Optional<Category> findById(int id) {
         log.info("Iniciando a busca de categorias por ID...");
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareFindByIdStatement(conn, id);
@@ -69,7 +69,7 @@ public class CategoryRepository {
         }
     }
 
-    private static PreparedStatement prepareFindByIdStatement(Connection conn, int id) throws SQLException {
+    private PreparedStatement prepareFindByIdStatement(Connection conn, int id) throws SQLException {
         String sql = "SELECT * FROM todo_list.category WHERE id = ?;";
 
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -77,14 +77,14 @@ public class CategoryRepository {
         return ps;
     }
 
-    private static Category mapRowToTask(ResultSet rs) throws SQLException {
+    private Category mapRowToTask(ResultSet rs) throws SQLException {
         return Category.builder()
                 .id(rs.getInt("id"))
                 .name(rs.getString("name"))
                 .build();
     }
 
-    private static List<Category> executeMap(ResultSet rs) throws SQLException {
+    private List<Category> executeMap(ResultSet rs) throws SQLException {
         List<Category> categories = new ArrayList<>();
 
         while (rs.next()) {
@@ -95,14 +95,14 @@ public class CategoryRepository {
         return categories;
     }
 
-    private static Optional<Category> executeSingleMap(ResultSet rs) throws SQLException {
+    private Optional<Category> executeSingleMap(ResultSet rs) throws SQLException {
         if (!rs.next()) return Optional.empty();
 
         log.info("Busca finalizada com sucesso");
         return Optional.of(mapRowToTask(rs));
     }
 
-    public static void update(Category category) {
+    public void update(Category category) {
         log.info("Atualizando a categoria '{}'...", category.getName());
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareUpdateStatement(conn, category)
@@ -115,7 +115,7 @@ public class CategoryRepository {
         }
     }
 
-    private static PreparedStatement prepareUpdateStatement(Connection conn, Category category) throws SQLException {
+    private PreparedStatement prepareUpdateStatement(Connection conn, Category category) throws SQLException {
         String sql = "UPDATE todo_list.category SET name = ? WHERE id = ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
 
@@ -125,7 +125,7 @@ public class CategoryRepository {
         return ps;
     }
 
-    public static void delete(int id) {
+    public void delete(int id) {
         log.info("Deletando a categoria com ID {}...", id);
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareDeleteStatement(conn, id)
@@ -138,7 +138,7 @@ public class CategoryRepository {
         }
     }
 
-    private static PreparedStatement prepareDeleteStatement(Connection conn, int id) throws SQLException {
+    private PreparedStatement prepareDeleteStatement(Connection conn, int id) throws SQLException {
         String sql = "DELETE FROM todo_list.category WHERE id = ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
 
@@ -147,7 +147,7 @@ public class CategoryRepository {
         return ps;
     }
 
-    public static boolean existsByName(Category category) {
+    public boolean existsByName(Category category) {
         log.info("Verificando se o nome já existe...");
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareExistsByNameStatement(conn, category);
@@ -164,7 +164,7 @@ public class CategoryRepository {
         }
     }
 
-    private static PreparedStatement prepareExistsByNameStatement(Connection conn, Category category) throws SQLException {
+    private PreparedStatement prepareExistsByNameStatement(Connection conn, Category category) throws SQLException {
         String sql = "SELECT COUNT(*) FROM todo_list.category WHERE name = ? AND id <> ?";
         PreparedStatement ps = conn.prepareStatement(sql);
 

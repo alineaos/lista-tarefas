@@ -1,100 +1,47 @@
 package todolist.controller;
 
-import todolist.exceptions.Validator;
 import todolist.model.Category;
 import todolist.service.CategoryService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 public class CategoryController {
-    private static final Scanner SCANNER = new Scanner(System.in);
+    private final CategoryService categoryService;
 
-    public static void save() {
-        System.out.println("Digite o nome da categoria");
-        String name = SCANNER.nextLine();
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
+    public String save(String name) {
         Category categoryToSave = Category.builder()
                 .name(name)
                 .build();
 
-        CategoryService.save(categoryToSave);
-        System.out.println("Categoria salva com sucesso.");
+        categoryService.save(categoryToSave);
+        return "Categoria salva com sucesso.";
     }
 
-    public static void findAll() {
-        List<Category> categories = CategoryService.findAll();
-        printCategoryTable(categories);
+    public List<Category> findAll() {
+        return categoryService.findAll();
     }
 
-    public static void findById() {
-        Optional<Category> categoryOptional = getCategoryById();
-
-        if (categoryOptional.isEmpty()) return;
-
-        printCategoryTable(List.of(categoryOptional.get()));
+    public Optional<Category> findById(int id) {
+        return categoryService.findById(id);
     }
 
-    public static void update() {
-        Optional<Category> categoryOptional = getCategoryById();
-        if (categoryOptional.isEmpty()) return;
-        Category categoryFromDb = categoryOptional.get();
-
-        System.out.println("Digite o novo nome: ");
-        String newName = SCANNER.nextLine();
-
+    public String update(Category category, String newName) {
         Category categoryToUpdate = Category.builder()
-                .id(categoryFromDb.getId())
+                .id(category.getId())
                 .name(newName)
                 .build();
 
-        CategoryService.update(categoryToUpdate);
-        System.out.printf("A categoria '%s' foi atualizada para '%s'.%n", categoryFromDb.getName(), newName);
+        categoryService.update(categoryToUpdate);
+        return "A categoria '%s' foi atualizada para '%s'.%n".formatted(category.getName(), newName);
     }
 
-    public static void delete() {
-        Optional<Category> categoryOptional = getCategoryById();
-        if (categoryOptional.isEmpty()) return;
-        Category categoryFromDb = categoryOptional.get();
-
-        System.out.println("Categoria selecionada: ");
-        printCategoryTable(List.of(categoryFromDb));
-
-        System.out.println("As tarefas cadastradas na categoria selecionada também serão deletadas.");
-        System.out.println("Essa ação é irreversível, você tem certeza? (S/N)");
-        String choice = SCANNER.nextLine();
-        if (!choice.equalsIgnoreCase("S")){
-            System.out.println("Ação cancelada.");
-            return;
-        }
-        CategoryService.delete(categoryFromDb.getId());
-        System.out.printf("Categoria '%s' deletada com sucesso%n", categoryFromDb.getName());
-
-    }
-
-    private static void printCategoryTable(List<Category> categories) {
-        if (categories.isEmpty()) {
-            System.out.println("Lista vazia. Nenhuma categoria para exibir.");
-            return;
-        }
-
-        String tablePattern = "[%-2s] %s%n";
-        System.out.printf(tablePattern, "ID", "Nome");
-        categories.forEach(c -> System.out.printf(tablePattern,
-                c.getId(),
-                c.getName()));
-    }
-
-    private static Optional<Category> getCategoryById() {
-        System.out.println("Digite o id da categoria ou 0 para cancelar");
-        int id = Validator.parseInteger(SCANNER.nextLine());
-        if (id == 0) return Optional.empty();
-
-        Optional<Category> categoryOptional = CategoryService.findById(id);
-
-        if (categoryOptional.isEmpty()) System.out.println("Categoria não encontrada.");
-
-        return categoryOptional;
+    public String delete(Category category) {
+        categoryService.delete(category.getId());
+        return "Categoria '%s' deletada com sucesso%n".formatted(category.getName());
     }
 }

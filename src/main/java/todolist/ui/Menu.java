@@ -1,97 +1,41 @@
 package todolist.ui;
 
-import todolist.controller.CategoryController;
-import todolist.controller.TaskController;
 import todolist.exceptions.Validator;
-import todolist.model.enums.TaskStatus;
-import todolist.util.TaskColumn;
 
 import java.util.Scanner;
 
 public class Menu {
-    public static void showTaskMenu() {
-        System.out.println("Selecione a opção desejada:");
-        System.out.println("[1] Criar tarefa");
-        System.out.println("[2] Listar todas as tarefas");
-        System.out.println("[3] Listar as tarefas pela data mais próxima");
-        System.out.println("[4] Listar as tarefas por...");
-        System.out.println("[5] Atualizar o Status da tarefa");
-        System.out.println("[6] Atualizar tarefa (descrição, data e categoria)");
-        System.out.println("[7] Deletar tarefa");
-        System.out.println("[8] Deletar todas as tarefas");
-        System.out.println("[9] Acessar o menu de categorias");
-        System.out.println("[0] Sair do programa");
+    private final TaskMenu taskMenu;
+    private final CategoryMenu categoryMenu;
+    private final Scanner scanner;
+
+    public Menu(TaskMenu taskMenu, CategoryMenu categoryMenu, Scanner scanner) {
+        this.taskMenu = taskMenu;
+        this.categoryMenu = categoryMenu;
+        this.scanner = scanner;
     }
 
-    public static void processingTaskMenuOption(int option) {
-        switch (option) {
-            case 1 -> TaskController.save();
-            case 2 -> TaskController.findAll();
-            case 3 -> TaskController.findByDataAsc();
-            case 4 -> TaskController.findByCriteria();
-            case 5 -> TaskController.updateStatus();
-            case 6 -> TaskController.update();
-            case 7 -> TaskController.delete();
-            case 8 -> TaskController.deleteAll();
-            default -> throw new IllegalArgumentException("Valor inválido");
-        }
-    }
-
-    public static void showCriteriasMenu() {
-        System.out.println("Selecione o critério:");
-        for (TaskColumn columns : TaskColumn.values()) {
-            System.out.printf("[%d] %s%n", columns.getColumnClassification(), columns.getPortugueseColumnName());
-        }
-    }
-
-    public static TaskColumn processingCriteriasMenuOption(int option) {
-        return TaskColumn.selectByColumnClassification(option);
-    }
-
-    public static void taskStatusMenu() {
-        for (TaskStatus status : TaskStatus.values()) {
-            System.out.printf("[%d] %s%n", status.getStatusClassification(), status.getPortugueseStatusName());
-        }
-    }
-
-    public static TaskStatus processingTaskStatusMenu(int option) {
-        return TaskStatus.selectByStatusId(option);
-    }
-
-
-    private static void showCategoryMenu() {
-        System.out.println("**********************");
-        System.out.println("* MENU DE CATEGORIAS *");
-        System.out.println("**********************\n");
-
-        System.out.println("Selecione a opção desejada:");
-        System.out.println("[1] Criar categoria");
-        System.out.println("[2] Listar todas as categorias");
-        System.out.println("[3] Listar categoria por Id");
-        System.out.println("[4] Atualizar categoria");
-        System.out.println("[5] Deletar categoria");
-        System.out.println("[0] Voltar para o menu anterior");
-
-    }
-
-    private static void processingCategoryMenu(int option) {
-        switch (option) {
-            case 1 -> CategoryController.save();
-            case 2 -> CategoryController.findAll();
-            case 3 -> CategoryController.findById();
-            case 4 -> CategoryController.update();
-            case 5 -> CategoryController.delete();
-            default -> throw new IllegalArgumentException("Valor inválido");
-        }
-    }
-
-    public static void runCategoryMenu(Scanner scanner) {
-        int option;
+    public void runApplication() {
         while (true) {
-            showCategoryMenu();
-            option = Validator.parseInteger(scanner.nextLine());
+            System.out.println("********************");
+            System.out.println("* LISTA DE TAREFAS *");
+            System.out.println("*  MENU PRINCIPAL  *");
+            System.out.println("********************\n");
+
+            System.out.println("Selecione o Menu desejado: ");
+            System.out.println("[1] Menu de Tarefas");
+            System.out.println("[2] Menu de Categorias");
+            System.out.println("[0] Encerrar o programa");
+
+            int option = Validator.parseInteger(scanner.nextLine());
+
             if (option == 0) return;
-            processingCategoryMenu(option);
+
+            switch (option) {
+                case 1 -> taskMenu.runTaskMenu();
+                case 2 -> categoryMenu.runCategoryMenu();
+                default -> System.out.println("Opção inválida.");
+            }
         }
     }
 }

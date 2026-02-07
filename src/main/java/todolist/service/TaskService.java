@@ -13,16 +13,24 @@ import java.util.List;
 import java.util.Optional;
 
 public class TaskService {
-    public static void save(Task task) {
+    private final TaskRepository taskRepository;
+    private final CategoryService categoryService;
+
+    public TaskService(TaskRepository taskRepository, CategoryService categoryService) {
+        this.taskRepository = taskRepository;
+        this.categoryService = categoryService;
+    }
+
+    public void save(Task task) {
         Validator.notPastDate(task.getDate());
-        TaskRepository.save(task);
+        taskRepository.save(task);
     }
 
-    public static List<Task> findAll() {
-        return TaskRepository.findAll();
+    public List<Task> findAll() {
+        return taskRepository.findAll();
     }
 
-    public static <T>List<Task> findByCriteria(TaskColumn criteria, T param) {
+    public <T> List<Task> findByCriteria(TaskColumn criteria, T param) {
         if (param instanceof LocalDate localDate) {
             Validator.formatDate(localDate);
             Validator.notPastDate(localDate);
@@ -30,39 +38,39 @@ public class TaskService {
 
         String selectedParam = paramFormatter(param);
 
-        return TaskRepository.findByCriteria(criteria, selectedParam);
+        return taskRepository.findByCriteria(criteria, selectedParam);
     }
 
-    public static List<Task> findByDataAsc() {
-        return TaskRepository.findAll()
+    public List<Task> findByDataAsc() {
+        return taskRepository.findAll()
                 .stream()
                 .sorted(Comparator.comparing(Task::getDate))
                 .toList();
     }
 
-    public static void updateStatus(Task task, TaskStatus newStatus) {
-        TaskRepository.updateStatus(task, newStatus);
+    public void updateStatus(Task task, TaskStatus newStatus) {
+        taskRepository.updateStatus(task, newStatus);
     }
 
-    public static void update(Task task) {
-        TaskRepository.update(task);
+    public void update(Task task) {
+        taskRepository.update(task);
     }
 
-    public static void delete(int id) {
-        TaskRepository.delete(id);
+    public void delete(int id) {
+        taskRepository.delete(id);
     }
 
-    public static void deleteAll() {
-        TaskRepository.deleteAll();
+    public void deleteAll() {
+        taskRepository.deleteAll();
     }
 
-    public static Optional<Task> getTaskById(int id){
-        return TaskRepository.findByCriteria(TaskColumn.ID, String.valueOf(id)).stream()
+    public Optional<Task> getTaskById(int id) {
+        return taskRepository.findByCriteria(TaskColumn.ID, String.valueOf(id)).stream()
                 .filter(t -> t.getId().equals(id))
                 .findFirst();
     }
 
-    private static <T> String paramFormatter(T param){
+    private <T> String paramFormatter(T param) {
         return switch (param) {
             case LocalDate d -> d.toString();
             case TaskStatus ts -> ts.getPortugueseStatusName();
@@ -71,7 +79,11 @@ public class TaskService {
         };
     }
 
-    public static Category getCategoryById(int id){
-        return CategoryService.getCategoryById(id);
+    public Category getCategoryById(int id) {
+        return categoryService.getCategoryById(id);
+    }
+
+    public List<Category> getCategoriesList() {
+        return categoryService.findAll();
     }
 }

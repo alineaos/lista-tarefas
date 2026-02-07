@@ -1,51 +1,54 @@
 package todolist;
 
 import lombok.extern.log4j.Log4j2;
+import todolist.controller.CategoryController;
+import todolist.controller.TaskController;
 import todolist.exceptions.BusinessException;
 import todolist.exceptions.DatabaseException;
-import todolist.exceptions.Validator;
+import todolist.repository.CategoryRepository;
+import todolist.repository.TaskRepository;
+import todolist.service.CategoryService;
+import todolist.service.TaskService;
+import todolist.ui.CategoryMenu;
 import todolist.ui.Menu;
+import todolist.ui.TaskMenu;
 
 import java.util.Scanner;
 
 @Log4j2
 public class Main {
-    private final static Scanner SCANNER = new Scanner(System.in);
 
     public static void main(String[] args) {
         log.info("Sistema iniciado.");
-        boolean isToContinue = true;
-        while (isToContinue) {
-            try {
-                System.out.println("********************");
-                System.out.println("* LISTA DE TAREFAS *");
-                System.out.println("********************\n");
-                Menu.showTaskMenu();
 
+        CategoryRepository categoryRepository = new CategoryRepository();
+        TaskRepository taskRepository = new TaskRepository();
 
-                int option = Validator.parseInteger(SCANNER.nextLine());
-                if (option == 0) {
-                    System.out.println("Sistema encerrado.");
-                    log.info("Sistema encerrado com sucesso.");
-                    return;
-                }
+        CategoryService categoryService = new CategoryService(categoryRepository);
+        TaskService taskService = new TaskService(taskRepository, categoryService);
 
-                if (option == 9){
-                    Menu.runCategoryMenu(SCANNER);
-                } else {
-                    Menu.processingTaskMenuOption(option);
-                }
-            } catch (BusinessException e) {
-                log.warn("Aviso de negócio: {}", e.getMessage(), e);
-                System.out.println("Aviso: " + e.getMessage());
-            } catch (DatabaseException e) {
-                log.error("Erro no banco de dados: {}", e.getMessage(), e);
-                System.out.println("Erro no banco de dados: " + e.getMessage());
-                isToContinue = false;
-            } catch (IllegalArgumentException e) {
-                log.warn("Aviso: {}", e.getMessage(), e);
-                System.out.println("Aviso: " + e.getMessage());
-            }
+        CategoryController categoryController = new CategoryController(categoryService);
+        TaskController taskController = new TaskController(taskService);
+
+        Scanner scanner = new Scanner(System.in);
+        TaskMenu taskMenu = new TaskMenu(taskController, scanner);
+        CategoryMenu categoryMenu = new CategoryMenu(categoryController, scanner);
+
+        Menu mainMenu = new Menu(taskMenu, categoryMenu, scanner);
+
+        try {
+            mainMenu.runApplication();
+            scanner.close();
+        } catch (BusinessException e) {
+            log.warn("Aviso de negócio: {}", e.getMessage(), e);
+            System.out.println("Aviso: " + e.getMessage());
+        } catch (DatabaseException e) {
+            log.error("Erro no banco de dados: {}", e.getMessage(), e);
+            System.out.println("Erro no banco de dados: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.warn("Aviso: {}", e.getMessage(), e);
+            System.out.println("Aviso: " + e.getMessage());
         }
+        System.out.println("Sistema encerrado.");
     }
 }

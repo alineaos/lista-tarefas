@@ -18,7 +18,7 @@ import java.util.List;
 
 @Log4j2
 public class TaskRepository {
-    public static void save(Task task) {
+    public void save(Task task) {
         log.info("Tentando salvar nova tarefa '{}'...", task.getDescription());
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareInsertStatement(conn, task)
@@ -31,7 +31,7 @@ public class TaskRepository {
         }
     }
 
-    private static PreparedStatement prepareInsertStatement(Connection conn, Task task) throws SQLException {
+    private PreparedStatement prepareInsertStatement(Connection conn, Task task) throws SQLException {
         String sql = "INSERT INTO todo_list.task (description, status, date, category_id) values (?, ?, ?, ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
 
@@ -44,7 +44,7 @@ public class TaskRepository {
 
     }
 
-    public static List<Task> findAll() {
+    public List<Task> findAll() {
         log.info("Iniciando a busca por todas as tarefas...");
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareFindAllStatement(conn);
@@ -58,7 +58,7 @@ public class TaskRepository {
     }
 
 
-    private static PreparedStatement prepareFindAllStatement(Connection conn) throws SQLException {
+    private PreparedStatement prepareFindAllStatement(Connection conn) throws SQLException {
         String sql = "SELECT t.id, t.description, t.status, t.date, t.category_id, c.name AS category_name FROM todo_list.task t " +
                 "INNER JOIN todo_list.category c " +
                 "ON t.category_id = c.id;";
@@ -66,7 +66,7 @@ public class TaskRepository {
         return conn.prepareStatement(sql);
     }
 
-    public static List<Task> findByCriteria(TaskColumn criteria, String param) {
+    public List<Task> findByCriteria(TaskColumn criteria, String param) {
         log.info("Iniciando a busca por todas as tarefas '{}' na coluna '{}'...", param, criteria);
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -80,7 +80,7 @@ public class TaskRepository {
         }
     }
 
-    private static PreparedStatement prepareFindByCriteriaStatement(Connection conn, String criteria, String param) throws SQLException {
+    private PreparedStatement prepareFindByCriteriaStatement(Connection conn, String criteria, String param) throws SQLException {
         boolean isCriteriaNumber = criteria.contains("Id");
         String operator = isCriteriaNumber ? " = " : " LIKE ";
         String sql = "SELECT t.id, t.description, t.status, t.date, t.category_id, c.name AS category_name FROM todo_list.task t " +
@@ -98,7 +98,7 @@ public class TaskRepository {
         return ps;
     }
 
-    private static Task mapRowToTask(ResultSet rs) throws SQLException {
+    private Task mapRowToTask(ResultSet rs) throws SQLException {
         TaskStatus rsToEnum = TaskStatus.selectByStatusPortugueseName(rs.getString("status"));
         Category category = Category.builder()
                 .id(rs.getInt("category_id"))
@@ -115,7 +115,7 @@ public class TaskRepository {
 
     }
 
-    private static List<Task> executeMap(ResultSet rs) throws SQLException {
+    private List<Task> executeMap(ResultSet rs) throws SQLException {
         List<Task> tasks = new ArrayList<>();
 
         while (rs.next()) {
@@ -126,7 +126,7 @@ public class TaskRepository {
         return tasks;
     }
 
-    public static void updateStatus(Task task, TaskStatus newStatus) {
+    public void updateStatus(Task task, TaskStatus newStatus) {
         log.info("Atualizando o status da tarefa com ID {}...", task.getId());
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareUpdateStatusStatement(conn, task, newStatus)
@@ -139,7 +139,7 @@ public class TaskRepository {
         }
     }
 
-    private static PreparedStatement prepareUpdateStatusStatement(Connection conn, Task task, TaskStatus newStatus) throws SQLException {
+    private PreparedStatement prepareUpdateStatusStatement(Connection conn, Task task, TaskStatus newStatus) throws SQLException {
         String sql = "UPDATE todo_list.task SET status = ? WHERE id = ?;";
 
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -148,7 +148,7 @@ public class TaskRepository {
         return ps;
     }
 
-    public static void update(Task task) {
+    public void update(Task task) {
         log.info("Atualizando a tarefa com ID '{}'...", task.getId());
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareUpdateStatement(conn, task)
@@ -161,7 +161,7 @@ public class TaskRepository {
         }
     }
 
-    private static PreparedStatement prepareUpdateStatement(Connection conn, Task task) throws SQLException {
+    private PreparedStatement prepareUpdateStatement(Connection conn, Task task) throws SQLException {
         String sql = "UPDATE todo_list.task SET description = ?, date = ?, category_id = ? WHERE id = ?;";
 
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -172,7 +172,7 @@ public class TaskRepository {
         return ps;
     }
 
-    public static void delete(int id) {
+    public void delete(int id) {
         log.info("Deletando a tarefa com ID {}...", id);
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareDeleteStatement(conn, id)
@@ -185,7 +185,7 @@ public class TaskRepository {
         }
     }
 
-    private static PreparedStatement prepareDeleteStatement(Connection conn, int id) throws SQLException {
+    private PreparedStatement prepareDeleteStatement(Connection conn, int id) throws SQLException {
         String sql = "DELETE FROM todo_list.task WHERE id = ?;";
 
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -193,7 +193,7 @@ public class TaskRepository {
         return ps;
     }
 
-    public static void deleteAll() {
+    public void deleteAll() {
         log.info("Deletando todos as tarefas da tabela...");
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement ps = prepareDeleteAllStatement(conn)
@@ -206,7 +206,7 @@ public class TaskRepository {
         }
     }
 
-    private static PreparedStatement prepareDeleteAllStatement(Connection conn) throws SQLException {
+    private PreparedStatement prepareDeleteAllStatement(Connection conn) throws SQLException {
         String sql = "TRUNCATE TABLE todo_list.task;";
         return conn.prepareStatement(sql);
     }

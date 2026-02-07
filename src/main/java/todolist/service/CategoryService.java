@@ -9,40 +9,45 @@ import java.util.List;
 import java.util.Optional;
 
 public class CategoryService {
+private final CategoryRepository categoryRepository;
 
-    public static void save(Category category) {
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
+    public void save(Category category) {
         Validator.categoryName(category.getName());
         existsByName(category);
-        CategoryRepository.save(category);
+        categoryRepository.save(category);
     }
 
-    public static List<Category> findAll() {
-        return CategoryRepository.findAll();
+    public List<Category> findAll() {
+        return categoryRepository.findAll();
     }
 
-    public static Optional<Category> findById(int id) {
-        return CategoryRepository.findById(id);
+    public Optional<Category> findById(int id) {
+        return categoryRepository.findById(id);
     }
 
-    public static void update(Category category) {
+    public void update(Category category) {
         Validator.categoryName(category.getName());
         existsByName(category);
-        CategoryRepository.update(category);
+        categoryRepository.update(category);
     }
 
-    public static void delete(int id) {
-        CategoryRepository.delete(id);
+    public void delete(int id) {
+        categoryRepository.delete(id);
     }
 
-    private static void existsByName(Category category) {
-        boolean nameAlreadyExists = CategoryRepository.existsByName(category);
+    private void existsByName(Category category) {
+        boolean nameAlreadyExists = categoryRepository.existsByName(category);
         if (nameAlreadyExists) {
             throw new BusinessException("O nome '" + category.getName() + "' já existe no banco de dados.");
         }
     }
 
-    public static Category getCategoryById(int id){
+    public Category getCategoryById(int id){
         return findById(id)
-                .orElseThrow(() -> new BusinessException("A categorid com o ID "+id +" não foi encontrada"));
+                .orElseThrow(() -> new BusinessException("A categoria com o ID "+id +" não foi encontrada"));
     }
 }
