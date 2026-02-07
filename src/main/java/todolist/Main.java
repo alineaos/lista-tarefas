@@ -40,7 +40,7 @@ public class Main {
                 System.out.println("Aviso: " + e.getMessage());
             } catch (DatabaseException e) {
                 log.error("Erro no banco de dados: {}", e.getMessage(), e);
-                System.out.println("Erro interno no banco: " + e.getMessage());
+                System.out.println("Erro no banco de dados: " + e.getMessage());
                 isToContinue = false;
             } catch (IllegalArgumentException e) {
                 log.warn("Aviso: {}", e.getMessage(), e);

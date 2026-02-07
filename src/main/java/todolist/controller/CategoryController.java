@@ -61,6 +61,7 @@ public class CategoryController {
         System.out.println("Categoria selecionada: ");
         printCategoryTable(List.of(categoryFromDb));
 
+        System.out.println("As tarefas cadastradas na categoria selecionada também serão deletadas.");
         System.out.println("Essa ação é irreversível, você tem certeza? (S/N)");
         String choice = SCANNER.nextLine();
         if (!choice.equalsIgnoreCase("S")){
