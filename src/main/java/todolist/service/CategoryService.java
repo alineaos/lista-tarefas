@@ -12,7 +12,7 @@ public class CategoryService {
 
     public static void save(Category category) {
         Validator.categoryName(category.getName());
-        existsByName(category.getName());
+        existsByName(category);
         CategoryRepository.save(category);
     }
 
@@ -26,7 +26,7 @@ public class CategoryService {
 
     public static void update(Category category) {
         Validator.categoryName(category.getName());
-        existsByName(category.getName());
+        existsByName(category);
         CategoryRepository.update(category);
     }
 
@@ -34,10 +34,10 @@ public class CategoryService {
         CategoryRepository.delete(id);
     }
 
-    private static void existsByName(String name) {
-        boolean nameAlreadyExists = CategoryRepository.existsByName(name);
+    private static void existsByName(Category category) {
+        boolean nameAlreadyExists = CategoryRepository.existsByName(category);
         if (nameAlreadyExists) {
-            throw new BusinessException("O nome '" + name + "' já existe no banco de dados.");
+            throw new BusinessException("O nome '" + category.getName() + "' já existe no banco de dados.");
         }
     }
 

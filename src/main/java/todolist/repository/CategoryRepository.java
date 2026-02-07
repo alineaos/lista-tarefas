@@ -147,10 +147,10 @@ public class CategoryRepository {
         return ps;
     }
 
-    public static boolean existsByName(String name) {
+    public static boolean existsByName(Category category) {
         log.info("Verificando se o nome já existe...");
         try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement ps = prepareExistsByNameStatement(conn, name);
+             PreparedStatement ps = prepareExistsByNameStatement(conn, category);
              ResultSet rs = ps.executeQuery()
         ) {
             if (rs.next()){
@@ -164,11 +164,12 @@ public class CategoryRepository {
         }
     }
 
-    private static PreparedStatement prepareExistsByNameStatement(Connection conn, String name) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM todo_list.category WHERE name = ?";
+    private static PreparedStatement prepareExistsByNameStatement(Connection conn, Category category) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM todo_list.category WHERE name = ? AND id <> ?";
         PreparedStatement ps = conn.prepareStatement(sql);
 
-        ps.setString(1, name);
+        ps.setString(1, category.getName());
+        ps.setInt(2, category.getId());
         return ps;
 
     }
