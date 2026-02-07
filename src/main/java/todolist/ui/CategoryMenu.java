@@ -63,7 +63,8 @@ public class CategoryMenu {
         System.out.println("Digite o nome da categoria");
         String name = scanner.nextLine();
 
-        categoryController.save(name);
+        String message = categoryController.save(name);
+        System.out.println(message);
     }
 
     private void handleFindAll(){

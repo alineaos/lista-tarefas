@@ -165,11 +165,12 @@ public class CategoryRepository {
     }
 
     private PreparedStatement prepareExistsByNameStatement(Connection conn, Category category) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM todo_list.category WHERE name = ? AND id <> ?";
+        String sql = "SELECT COUNT(*) FROM todo_list.category " +
+                "WHERE name = ? AND id <> COALESCE(?, 0)";
         PreparedStatement ps = conn.prepareStatement(sql);
 
         ps.setString(1, category.getName());
-        ps.setInt(2, category.getId());
+        ps.setInt(2, category.getId() != null && category.getId()  > 0 ? category.getId() : 0);
         return ps;
 
     }
