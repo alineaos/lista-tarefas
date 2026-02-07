@@ -51,7 +51,7 @@ public class CategoryRepository {
     }
 
     private static PreparedStatement prepareFindAllStatement(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM todo_list.category;";
+        String sql = "SELECT *  FROM todo_list.category ORDER BY id ASC;";
 
         return conn.prepareStatement(sql);
     }

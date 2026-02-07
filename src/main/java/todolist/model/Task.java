@@ -13,5 +13,5 @@ public class Task {
     String description;
     TaskStatus status;
     LocalDate date;
-    String category;
+    Category category;
 }

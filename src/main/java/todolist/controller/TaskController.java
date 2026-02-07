@@ -1,8 +1,10 @@
 package todolist.controller;
 
 import todolist.exceptions.Validator;
+import todolist.model.Category;
 import todolist.model.Task;
 import todolist.model.enums.TaskStatus;
+import todolist.service.CategoryService;
 import todolist.service.TaskService;
 import todolist.ui.Menu;
 import todolist.util.TaskColumn;
@@ -28,8 +30,8 @@ public class TaskController {
         TaskStatus status = Menu.processingTaskStatusMenu(option);
         System.out.println("Digite a data limite no formato DD/MM/AAAA");
         LocalDate date = Validator.parseDate(SCANNER.nextLine());
-        System.out.println("Digite a categoria da tarefa");
-        String category = SCANNER.nextLine();
+        System.out.println("Escolha o ID da categoria da tarefa");
+        Category category = getCategoryById();
 
         Task taskToSave = Task.builder()
                 .description(description)
@@ -63,8 +65,10 @@ public class TaskController {
             }
             case "Date" -> {
                 System.out.println("A data precisa estar no formato DD/MM/YYYY");
-                yield  Validator.parseDate(SCANNER.nextLine());
+                yield Validator.parseDate(SCANNER.nextLine());
             }
+            case "Category_Id" -> getCategoryById().getId();
+
             default -> SCANNER.nextLine();
         };
 
@@ -72,12 +76,12 @@ public class TaskController {
         printTaskTable(tasks);
     }
 
-    public static void findByDataAsc(){
+    public static void findByDataAsc() {
         List<Task> tasks = TaskService.findByDataAsc();
         printTaskTable(tasks);
     }
 
-    public static void updateStatus(){
+    public static void updateStatus() {
         Optional<Task> taskOptional = getTaskById();
         if (taskOptional.isEmpty()) return;
         Task taskFromDb = taskOptional.get();
@@ -101,9 +105,15 @@ public class TaskController {
 
         String updatedDescription = fieldToUpdate(TaskColumn.DESCRIPTION.getPortugueseColumnName(), taskFromDb.getDescription());
         LocalDate updatedDate = fieldToUpdate(TaskColumn.DATE.getPortugueseColumnName(), taskFromDb.getDate(),
-                Validator::parseDate,
-                Validator::formatDate);
-        String updatedCategory = fieldToUpdate(TaskColumn.CATEGORY.getPortugueseColumnName(), taskFromDb.getCategory());
+                Validator::formatDate,
+                Validator::parseDate);
+
+
+        String categoryFromDb = fieldToUpdate(TaskColumn.CATEGORY_ID.getPortugueseColumnName(), String.valueOf(taskFromDb.getCategory().getId()));
+
+        Category updatedCategory = Category.builder()
+                .id(Integer.parseInt(categoryFromDb))
+                .build();
 
 
         Task taskToUpdate = Task.builder()
@@ -117,7 +127,7 @@ public class TaskController {
         System.out.println("Tarefa atualizada com sucesso.");
     }
 
-    public static void delete(){
+    public static void delete() {
         Optional<Task> taskOptional = getTaskById();
         if (taskOptional.isEmpty()) return;
         Task taskToDelete = taskOptional.get();
@@ -161,7 +171,7 @@ public class TaskController {
                 f.getDescription(),
                 f.getStatus().getPortugueseStatusName(),
                 Validator.formatDate(f.getDate()),
-                f.getCategory()));
+                f.getCategory().getName()));
     }
 
     private static Optional<Task> getTaskById() {
@@ -179,15 +189,16 @@ public class TaskController {
 
     private static String fieldToUpdate(String field, String currentValue) {
         System.out.printf("%s: %s%n", field, currentValue);
-        System.out.printf("Digite a nova %s. Em branco mantém a atual.%n", field);
+        System.out.printf("Digite o(a) novo(a) %s. Em branco para manter o(a) atual.%n", field);
+        if (field.equals("Id Categoria")) printCategoriesList();
         String input = SCANNER.nextLine();
         return input.isBlank() ? currentValue : input;
 
     }
 
-    private static <T> T fieldToUpdate(String field, T currentValue, Function<String, T> converter, Function<T, String> formatter) {
+    private static <T> T fieldToUpdate(String field, T currentValue, Function<T, String> formatter, Function<String, T> converter) {
         System.out.printf("%s: %s%n", field, formatter.apply(currentValue));
-        System.out.printf("Digite a nova %s. Em branco mantém a atual.%n", field);
+        System.out.printf("Digite o(a) novo(a) %s. Em branco para manter o(a) atual.%n", field);
         String input = SCANNER.nextLine();
 
         if (input.isBlank()) {
@@ -197,7 +208,7 @@ public class TaskController {
 
     }
 
-    private static boolean confirmeAction (String message) {
+    private static boolean confirmeAction(String message) {
         while (true) {
             System.out.printf("%s (S/N)%n", message);
             String input = SCANNER.nextLine().toUpperCase();
@@ -207,5 +218,19 @@ public class TaskController {
                 return false;
             }
         }
+    }
+
+    private static void printCategoriesList() {
+        System.out.println("[ID] Categoria");
+        CategoryService.findAll()
+                .forEach(c -> System.out.printf("[%-2s] %s%n", c.getId(), c.getName()));
+    }
+
+
+    private static Category getCategoryById() {
+        printCategoriesList();
+        int categoryId = Validator.parseInteger(SCANNER.nextLine());
+
+        return TaskService.getCategoryById(categoryId);
     }
 }

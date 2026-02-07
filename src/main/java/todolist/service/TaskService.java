@@ -1,6 +1,7 @@
 package todolist.service;
 
 import todolist.exceptions.Validator;
+import todolist.model.Category;
 import todolist.model.Task;
 import todolist.model.enums.TaskStatus;
 import todolist.repository.TaskRepository;
@@ -68,5 +69,9 @@ public class TaskService {
             case Integer i -> i.toString();
             default -> param.toString();
         };
+    }
+
+    public static Category getCategoryById(int id){
+        return CategoryService.getCategoryById(id);
     }
 }

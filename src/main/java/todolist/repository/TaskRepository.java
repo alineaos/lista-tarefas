@@ -3,6 +3,7 @@ package todolist.repository;
 import lombok.extern.log4j.Log4j2;
 import todolist.conn.ConnectionFactory;
 import todolist.exceptions.DatabaseException;
+import todolist.model.Category;
 import todolist.model.Task;
 import todolist.model.enums.TaskStatus;
 import todolist.util.TaskColumn;
@@ -31,13 +32,13 @@ public class TaskRepository {
     }
 
     private static PreparedStatement prepareInsertStatement(Connection conn, Task task) throws SQLException {
-        String sql = "INSERT INTO todo_list.task (description, status, date, category) values (?, ?, ?, ?);";
+        String sql = "INSERT INTO todo_list.task (description, status, date, category_id) values (?, ?, ?, ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
 
         ps.setString(1, task.getDescription());
         ps.setString(2, task.getStatus().getPortugueseStatusName());
         ps.setDate(3, Date.valueOf(task.getDate()));
-        ps.setString(4, task.getCategory());
+        ps.setInt(4, task.getCategory().getId());
 
         return ps;
 
@@ -58,7 +59,10 @@ public class TaskRepository {
 
 
     private static PreparedStatement prepareFindAllStatement(Connection conn) throws SQLException {
-        String sql = "SELECT * FROM todo_list.task;";
+        String sql = "SELECT t.id, t.description, t.status, t.date, t.category_id, c.name AS category_name FROM todo_list.task t " +
+                "INNER JOIN todo_list.category c " +
+                "ON t.category_id = c.id;";
+
         return conn.prepareStatement(sql);
     }
 
@@ -77,21 +81,36 @@ public class TaskRepository {
     }
 
     private static PreparedStatement prepareFindByCriteriaStatement(Connection conn, String criteria, String param) throws SQLException {
-        String sql = "SELECT * FROM todo_list.task WHERE " + criteria + " LIKE ?;";
+        boolean isCriteriaNumber = criteria.contains("Id");
+        String operator = isCriteriaNumber ? " = " : " LIKE ";
+        String sql = "SELECT t.id, t.description, t.status, t.date, t.category_id, c.name AS category_name FROM todo_list.task t " +
+                "INNER JOIN todo_list.category c " +
+                "ON t.category_id = c.id " +
+                "WHERE t.%s %s ?;".formatted(criteria, operator);
 
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, String.format("%%%s%%", param));
+        if (isCriteriaNumber) {
+            ps.setInt(1, Integer.parseInt(param));
+        } else {
+            ps.setString(1, String.format("%%%s%%", param));
+
+        }
         return ps;
     }
 
     private static Task mapRowToTask(ResultSet rs) throws SQLException {
         TaskStatus rsToEnum = TaskStatus.selectByStatusPortugueseName(rs.getString("status"));
+        Category category = Category.builder()
+                .id(rs.getInt("category_id"))
+                .name(rs.getString("category_name"))
+                .build();
+
         return Task.builder()
                 .id(rs.getInt("id"))
                 .description(rs.getString("description"))
                 .status(rsToEnum)
                 .date(rs.getDate("date").toLocalDate())
-                .category(rs.getString("category"))
+                .category(category)
                 .build();
 
     }
@@ -143,12 +162,12 @@ public class TaskRepository {
     }
 
     private static PreparedStatement prepareUpdateStatement(Connection conn, Task task) throws SQLException {
-        String sql = "UPDATE todo_list.task SET description = ?, date = ?, category = ? WHERE id = ?;";
+        String sql = "UPDATE todo_list.task SET description = ?, date = ?, category_id = ? WHERE id = ?;";
 
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, task.getDescription());
         ps.setDate(2, Date.valueOf(task.getDate()));
-        ps.setString(3, task.getCategory());
+        ps.setInt(3, task.getCategory().getId());
         ps.setInt(4, task.getId());
         return ps;
     }

@@ -40,4 +40,9 @@ public class CategoryService {
             throw new BusinessException("O nome '" + name + "' já existe no banco de dados.");
         }
     }
+
+    public static Category getCategoryById(int id){
+        return findById(id)
+                .orElseThrow(() -> new BusinessException("A categorid com o ID "+id +" não foi encontrada"));
+    }
 }
