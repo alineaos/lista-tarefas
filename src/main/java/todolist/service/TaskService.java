@@ -71,13 +71,22 @@ public class TaskService {
     }
 
     private <T> String paramFormatter(T param) {
-        return switch (param) {
-            case LocalDate d -> d.toString();
-            case TaskStatus ts -> ts.getPortugueseStatusName();
-            case Integer i -> i.toString();
-            default -> param.toString();
-        };
+
+        if (param instanceof LocalDate d) {
+            return d.toString();
+        }
+
+        if (param instanceof TaskStatus ts) {
+            return ts.getPortugueseStatusName();
+        }
+
+        if (param instanceof Integer i) {
+            return i.toString();
+        }
+
+        return param.toString();
     }
+
 
     public Category getCategoryById(int id) {
         return categoryService.getCategoryById(id);
