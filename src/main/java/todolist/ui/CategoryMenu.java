@@ -30,7 +30,7 @@ public class CategoryMenu {
     }
 
     private void showCategoryMenu() {
-        System.out.println("**********************");
+        System.out.println("\n**********************");
         System.out.println("* MENU DE CATEGORIAS *");
         System.out.println("**********************\n");
 

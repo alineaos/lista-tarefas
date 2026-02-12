@@ -21,7 +21,7 @@ public class Menu {
     public void runApplication() {
         while (true) {
             try {
-                System.out.println("********************");
+                System.out.println("\n********************");
                 System.out.println("* LISTA DE TAREFAS *");
                 System.out.println("*  MENU PRINCIPAL  *");
                 System.out.println("********************\n");

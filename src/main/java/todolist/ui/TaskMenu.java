@@ -35,7 +35,7 @@ public class TaskMenu {
     }
 
     private void showTaskMenu() {
-        System.out.println("*******************");
+        System.out.println("\n*******************");
         System.out.println("* MENU DE TAREFAS *");
         System.out.println("*******************\n");
 
