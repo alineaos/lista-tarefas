@@ -57,12 +57,15 @@ int category_id FK
 │               ├── ui/           # Menus da aplicação
 │               ├── util/         # Classes utilitárias
 │               └── Main.java     # Inicialização da aplicação
+├── assets/                       # Mídias para o README
 ├── logs/                         # Logs do sistema organizados por data
 ├── docker-compose.yml            # Organização dos containers
 ├── Dockerfile                    # Criação da imagem da aplicação
 ├── init.sql                      # Estrutura do Banco de Dados
 ├── entrypoint.sh                 # Script: Limpa o terminal e inicia a aplicação
 ├── pom.xml                       # Dependências do Maven
+├── .dockerignore                 # Exclusão de arquivos desnecessários na imagem Docker
+├── .gitignore
 └── README.md
 ```
 
