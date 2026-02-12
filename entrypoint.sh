@@ -1,0 +1,3 @@
+clear
+
+java -jar /app/app.jar

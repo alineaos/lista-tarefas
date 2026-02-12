@@ -13,7 +13,9 @@ RUN mvn clean install
 FROM eclipse-temurin:21-jre-alpine
 
 COPY --from=build /app/target/lista-tarefas-1.0-SNAPSHOT-jar-with-dependencies.jar /app/app.jar
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 WORKDIR /app
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["/bin/sh", "/app/entrypoint.sh"]
