@@ -12,6 +12,8 @@ Lista de tarefas desenvolvida em Java, permitindo melhor organização de afazer
 O sistema implementa as funcionalidades CRUD no banco de dados MySQL, armazenando os dados das categorias e das tarefas. A aplicação possui um menu interativo e funciona via CLI (Interface de Linha de Comando).
 
 O Docker cria um container da aplicação, permitindo a sua execução mesmo em máquinas que não possuam Java e/ou MySQL instalados.
+### 🎬 Demonstração
+![Demonstração da Aplicação](./assets/todo-list-demo.gif)
 
 ### ✨ Funcionalidades do Sistema
 - Criar tarefa
@@ -59,6 +61,7 @@ int category_id FK
 ├── docker-compose.yml            # Organização dos containers
 ├── Dockerfile                    # Criação da imagem da aplicação
 ├── init.sql                      # Estrutura do Banco de Dados
+├── entrypoint.sh                 # Script: Limpa o terminal e inicia a aplicação
 ├── pom.xml                       # Dependências do Maven
 └── README.md
 ```
